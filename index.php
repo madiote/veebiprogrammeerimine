@@ -57,6 +57,6 @@
 		<a href="https://www.tlu.ee">TLÜ kodulehele saab siit</a>
 	</footer>
 	
-	<script src="force-https.js"></script> 
+	<script src="../force-https.js"></script> 
 	</body>
 </html>
