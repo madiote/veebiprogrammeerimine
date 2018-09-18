@@ -41,7 +41,7 @@
 				echo $firstName . " " . $lastName;
 			?>
 		</h1>
-		<p>Tere tulemast PHP lehele! <a href="../index.html">Tavasaidile saab siit</a></p>
+		<p>Tere tulemast tund2 PHP lehele! <a href="../index.html">Tavasaidile saab siit</a></p>
 		<?php
 			echo "<p>Täna on " . $dateToday . " kell " . $hourNow . ":" . $minuteNow . " (" . $partOfDay . ").";
 		?><br />
@@ -53,9 +53,10 @@
 	<footer>
 		<hr />
 		<p>See leht on valminud õppetöö raames ja ei oma mingisugust, mõtestatud või muul moel väärtuslikku sisu.</p>
-		<img src="../../~rinde/veebiprogrammeerimine2018s/tlu_terra_600x400_2.jpg" alt="Tallinna ülikool" width="300" height="150"> <a href="https://www.tlu.ee">TLÜ kodulehele saab siit</a>
+		<img src="../../~rinde/veebiprogrammeerimine2018s/tlu_terra_600x400_2.jpg" alt="Tallinna ülikool" width="300" height="150"><br />
+		<a href="https://www.tlu.ee">TLÜ kodulehele saab siit</a>
 	</footer>
 	
-	<script src="force-https.js"></script> 
+	<script src="../force-https.js"></script> 
 	</body>
 </html>
