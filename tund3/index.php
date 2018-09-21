@@ -8,7 +8,7 @@
 	$weekdayToday = date("N");
 	$weekdayNamesET = ["esmaspäev", "teisipäev", "kolmapäev", "neljapäev", "reede", "laupäev", "pühapäev"];
 	$monthToday = date("m");
-	$monthNamesET = ["jaanuar", "veebruar", "märts", "aprill", "mai", "juuni", "juuli", "august", "september", "november", "detsember"];
+	$monthNamesET = ["jaanuar", "veebruar", "märts", "aprill", "mai", "juuni", "juuli", "august", "september", "oktoober", "november", "detsember"];
 	$hourNow = date("G");
 	$minuteNow = date("i");
 	$partOfDay = "";
@@ -56,7 +56,7 @@
 				echo $firstName . " " . $lastName;
 			?>
 		</h1>
-		<p>Tere tulemast tund3 lehele! <a href="../index.php">Tund2 sait</a> <a href="photo.php">Fotosait</a> <a href="page.php">page.php</a></p>
+		<p>Tere tulemast tund3 lehele! <a href="../index.php">Tund2 sait</a> <a href="photo.php">Fotosait</a> <a href="photo2.php">Fotosait 2</a> <a href="page.php">page.php</a></p>
 		<?php
 			//echo "<p>Täna on " . $dateToday . " kell " . $hourNow . ":" . $minuteNow . " (" . $partOfDay . " - " . $weekdayToday .  ").";
 			echo "<p> Täna on " . $weekdayNamesET[$weekdayToday - 1] . ", " . $dayToday . ". " . $monthNamesET[$monthToday - 1] . " " . $yearToday . ".</p>";

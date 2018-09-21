@@ -1,8 +1,10 @@
 <?php
-	//echo "See on minu esimene PHP!";
 	$firstName = "Tundmatu";
 	$lastName = "Kodanik";
-	
+	$monthToday = date("m");
+	$monthNamesET = ["jaanuar", "veebruar", "märts", "aprill", "mai", "juuni", "juuli", "august", "september", "oktoober", "november", "detsember"];
+	$amountOfMonths = count($monthNamesET);
+
 	//Määra muutujate väärtused POST-requesti järgi
 	if(isset($_POST["firstname"])){
 		$firstName = $_POST["firstname"];
@@ -47,6 +49,19 @@
 			<br />
 			<label>Sünniaasta</label>
 			<input type="number" min="1914" max="2000" value="2000" name="birthyear">
+			<br />
+			<select name="birthMonth">
+			<?php
+
+				for ($i = 1; $i <= $amountOfMonths; $i++){
+					if($i == $monthToday){
+						echo '<option value="'. $i . '" selected>' . $monthNamesET[$i - 1] . '</option>' . "\n";
+					} else {
+						echo '<option value="'. $i . '">' . $monthNamesET[$i - 1] . '</option>' . "\n";
+					}
+				}
+			?>
+			</select>
 			<input type="submit" name="submitUserData" value="Saada andmed">
 		</form>
 		
