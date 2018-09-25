@@ -1,4 +1,7 @@
 <?php
+	// Include global functions
+	require("functions.php");
+
 	$firstName = "Tundmatu";
 	$lastName = "Kodanik";
 	$fullName = "";
@@ -17,13 +20,6 @@
 	
 	if(isset($_POST["birthyear"])){
 		$birthYear = test_input($_POST["birthyear"]);
-	}
-	
-	function test_input($data) { // Sanitize input
-	  $data = trim($data);
-	  $data = stripslashes($data);
-	  $data = htmlspecialchars($data);
-	  return $data;
 	}
 	
 	function stupidFunction() {

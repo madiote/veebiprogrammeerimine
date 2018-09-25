@@ -1,36 +1,21 @@
 <?php
 	require("functions.php");
-	$notice = null;
+	$notice = readallmessages();
 	
-	if (isset($_POST["submitMessage"])){
-		if ($_POST["message"] != "Sõnum" and !empty($_POST["message"])){ // Check for placeholder or empty
-			$message = test_input($_POST["message"]);
-			$notice = saveamsg($_POST["message"]);
-		}
-		else {
-			$notice = "Palun kirjuta sõnum.";
-		}
-	}
+	
 ?>
 <!DOCTYPE html>
 
 <html lang="et">
 	<head>
 		<meta charset="utf-8">
-		<title>Anonüümse sõnumi lisamine</title>
+		<title>Anonüümsed sõnumid</title>
 		<link rel="icon" href="https://www.tlu.ee/themes/tlu/images/favicons/favicon-32x32.png" type="image/png" sizes="16x16">
 	</head>
 
 	<body>
-		<h1>Sõnumi lisamine</h1>
-		<form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-			<label>Sõnum (max 256 märki):</label>
-			<br>
-			<textarea name="message" rows="4" cols="64" maxlength="256">Sõnum</textarea>
-			<br>
-			<input type="submit" name="submitMessage" value="Salvesta sõnum">
-		</form>
-		<p><?php echo $notice; ?></p>
+		<h1>Sõnumid</h1>
+		<?php echo $notice; ?>
 		
 		
 		<hr />
