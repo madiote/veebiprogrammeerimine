@@ -5,7 +5,7 @@
 	if (isset($_POST["submitMessage"])){
 		if ($_POST["message"] != "Sõnum" and !empty($_POST["message"])){ // Check for placeholder or empty
 			$message = test_input($_POST["message"]);
-			$notice = saveamsg($_POST["message"]);
+			$notice = saveamsg($message);
 		}
 		else {
 			$notice = "Palun kirjuta sõnum.";
