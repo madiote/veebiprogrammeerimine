@@ -69,7 +69,14 @@
 		$passwordError = "Palun sisesta oma parool!";
 	  }
 	  
+	  // Kas on kõik veateated tühjad
+	  if (empty($firstNameError) and empty($lastNameError) and empty($birthMonthError) and empty($birthYearError) and empty($birthDayError) and empty($birthDayError) and empty($birthDateError) and empty($genderError) and empty($emailError) and empty($passwordError)){
+		  $notice = signup($firstName, $lastName, $birthDate, $gender, $_POST["email"], $_POST["password"]);
+	  }
+  
   }
+  
+ 
 ?>
 <!DOCTYPE html>
 <html>
@@ -135,9 +142,11 @@
 		<label>E-posti aadress (kasutajatunnus): </label><br>
 		<input type="email" name="email" value="<?php echo $email; ?>"><span><?php echo $emailError; ?></span><br>
 		<label>Salasõna (min 8 märki): </label><br>
-		<input type="password" name="lastname" value=""><span><?php echo $passwordError; ?></span><br>
+		<input type="password" name="password" value=""><span><?php echo $passwordError; ?></span><br>
 		<input type="submit" name="submitUserData" value="Loo kasutaja">
 	</form>
+	
+	<p><?php echo $notice; ?></p>
 </body>
 </html>
 

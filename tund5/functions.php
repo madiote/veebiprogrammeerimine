@@ -108,5 +108,29 @@
 	  return $data;
 	}
 	
+	function signup($firstName, $lastName, $birthDate, $gender, $email, $password){
+		$notice = "";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt = $mysqli -> prepare("INSERT INTO vpusers (firstname, lastname, birthdate, gender, email, password) VALUES (?, ?, ?, ?, ?, ?)");
+		echo $mysqli -> error;
+		
+		// Krüpteerime parooli
+		$options = ["cost" => 12, // Mitu ms kulub krüpteerimisele, 10 tavaline ja 12 max
+					"salt" => substr(sha1(mt_rand()), 0, 22)]; // Hash'i juhuslik sool, võta 22 märki
+		$pwdhash = password_hash($password, PASSWORD_BCRYPT, $options); // Hangi parooli soolatud räsi bcrypt'ga
+ 		 
+		$stmt -> bind_param("sssiss", $firstName, $lastName, $birthDate, $gender, $email, $pwdhash);
+		if($stmt -> execute()){
+			$notice = "Kasutaja loomine õnnestus!";
+		} else {
+			$notice = "Kasutaja loomisel esines tõrge: " . $stmt -> error; 
+		}
+		
+		$stmt -> close();
+		$mysqli -> close();
+		
+		return $notice;
+	}
 	
 ?>
