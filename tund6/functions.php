@@ -2,6 +2,56 @@
 	require("../../../config.php"); // Account details
 	$database = "if18_madis_ot_1";
 	
+	// Using a session
+	session_start();
+	
+	function signin($email, $password){
+		$notice = "";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt = $mysqli -> prepare("SELECT id, firstname, lastname, password FROM vpusers WHERE email = ?");
+		echo $mysqli->error;
+		
+		$stmt -> bind_param("s", $email);
+		$stmt -> bind_result($idFromDb, $firstnameFromDb, $lastnameFromDb, $passwordFromDb);
+		
+		if($stmt -> execute()){
+			// DB request succeeded
+			if($stmt -> fetch()){
+				// User exists
+				if(password_verify($password, $passwordFromDb)){
+					// Password correct
+					$notice = "Olete õnnelikult sisseloginud!";		
+					// Set up session variables
+					$_SESSION["userId"] = $idFromDb;
+					$_SESSION["lastName"] = $lastnameFromDb;
+					$_SESSION["firstName"] = $firstnameFromDb;
+					
+					// Close completed connections
+					$stmt -> close(); 
+					$mysqli -> close();
+					
+					// Redirect to file
+					header("Location: main.php"); 
+					exit();
+				}
+				else {
+					$notice = "Kahjuks vale salasõna!";
+				}
+			}
+			else {
+				$notice = "Kahjuks sellise kasutajatunnusega (" . $email . ") kasutajat ei leitud.";
+			}
+		}
+		else {
+			$notice = "Sisselogimisel tekkis tehniline viga." . $stmt -> error;
+		}
+		$stmt -> close();
+		$mysqli -> close();
+		
+		return $notice;
+	}
+	
 	function saveamsg($msg){
 		$notice = "";
 		// Create db connection
