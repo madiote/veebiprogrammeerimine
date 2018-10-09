@@ -5,6 +5,54 @@
 	// Using a session
 	session_start();
 	
+	//SQL käsk andmete uuendamiseks
+	//UPDATE vpamsg SET acceptedby=?, accepted=?, accepttime=now() WHERE id = ?
+	
+	function readmsgforvalidation($editId){
+		$notice = "";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt = $mysqli->prepare("SELECT message FROM vpamsg WHERE id = ?");
+		echo $mysqli -> error;
+		
+		$stmt->bind_param("i", $editId);
+		$stmt->bind_result($msg);
+		$stmt->execute();
+		
+		if($stmt->fetch()){
+			$notice = $msg;
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		return $notice;
+	}
+	
+	function readallunvalidatedmessages(){
+		$notice = "<ul> \n";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt = $mysqli -> prepare("SELECT id, message FROM vpamsg WHERE accepted IS NULL"); //sort: ORDER BY id DESC
+		echo $mysqli -> error;
+		$stmt -> bind_result($msgid, $msg);
+		
+		if ($stmt -> execute()){
+			while($stmt -> fetch()){
+				$notice .= "<li>" . $msg . '<br><a href = "validatemessage.php?id=' . $msgid . '" >Valideeri</a></li>' . "\n";
+			}
+		}
+		else {
+			$notice .= "<li>Sõnumite lugemisel tekkis viga: " . $stmt -> error . "</li> \n";
+		}
+		
+		$notice .= "</ul> \n";
+		
+		$stmt -> close();
+		$mysqli -> close();
+		
+		return $notice;
+	}
+	
 	function signin($email, $password){
 		$notice = "";
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
