@@ -43,7 +43,6 @@
 	  <input name="login" type="submit" value="Logi sisse">&nbsp;<span><?php echo $notice; ?>
 	</form>
 	<p><a href="newuser.php">Loo kasutaja</a>!</p>
-	<hr>
 	<p><a href="addmsg.php">Lisa sõnum</a>!</p>
 	<hr>
 	<div>

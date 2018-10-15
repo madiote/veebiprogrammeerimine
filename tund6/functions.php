@@ -86,7 +86,7 @@
 		$stmt->execute();
 		
 		while ($stmt -> fetch()){
-			$notice .= "<p>" . $msg . "</p> \n"; // .= means appending text
+			$notice .= "<p>" . $msg . "</p> \n";
 		}
 		
 		$stmt->close();
@@ -138,6 +138,28 @@
 		$stmt -> close();
 		$mysqli -> close();
 		
+		return $notice;
+	}
+	
+	function getuserlist($currentUser){
+		$notice = "";
+		$firstname = "";
+		$lastname = "";
+		$email = "";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt = $mysqli->prepare("SELECT firstname, lastname, email FROM vpusers WHERE id != $currentUser");
+		echo $mysqli -> error;
+		
+		$stmt->bind_result($firstname, $lastname, $email);
+		$stmt->execute();
+		
+		while ($stmt -> fetch()){
+			$notice .= "<li>" . $firstname . " " . $lastname . " (" . $email . ")</li> \n"; 
+		}
+		
+		$stmt->close();
+		$mysqli->close();
 		return $notice;
 	}
 	

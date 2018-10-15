@@ -28,6 +28,7 @@
 	<ul>
 		<li><a href="?logout=1">Logi välja</a></li>
 		<li><a href="validatemsg.php">Valideeri anonüümseid sõnumeid</a></li>
+		<li><a href="users.php">Kasutajate nimekiri</a></li>
 	</ul>
 	<iframe src="../footer.html" frameBorder="0" height="auto" width="100%"></iframe>
 	<script src="../../force-https.js"></script> <!-- Force HTTPS with javascript -->
