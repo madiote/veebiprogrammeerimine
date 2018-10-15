@@ -31,7 +31,7 @@
 			<input type="submit" name="submitMessage" value="Salvesta sõnum">
 		</form>
 		<p><?php echo $notice; ?></p>
-		
+		<a href="index_2.php">Tagasi</a>
 		
 		<hr />
 		<iframe src="../footer.html" frameBorder="0" height="auto" width="100%"></iframe>

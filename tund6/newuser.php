@@ -163,6 +163,7 @@
 	</form>
 	
 	<p><?php echo $notice; ?></p>
+	<a href="index_2.php">Tagasi</a>
 	<iframe src="../footer.html" frameBorder="0" height="auto" width="100%"></iframe>
 	<script src="../../force-https.js"></script> <!-- Force HTTPS with javascript -->
 </body>
