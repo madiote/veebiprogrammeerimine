@@ -14,8 +14,17 @@
 	exit();
   }
   
+  // Validate
+  if(isset($_POST["submitValidation"])){
+	validatemsg($_POST["id"], $_POST["validation"], $_SESSION["userId"]);
+  }
+
   if(isset($_GET["id"])){
-	  $msg = readmsgforvalidation($_GET["id"]);
+	 $msg = readmsgforvalidation($_GET["id"]); // show messages
+  }
+  else {
+	header("Location: validatemsg.php"); // return if there is no more GET id
+	exit();
   }
 ?>
 <!DOCTYPE html>

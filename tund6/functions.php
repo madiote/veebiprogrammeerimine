@@ -5,9 +5,29 @@
 	// Using a session
 	session_start();
 	
-	//SQL käsk andmete uuendamiseks
-	//UPDATE vpamsg SET acceptedby=?, accepted=?, accepttime=now() WHERE id = ?
-	
+	function validatemsg($id, $status, $userid){
+		$notice = "";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt = $mysqli->prepare("UPDATE vpamsg SET acceptedby=?, accepted=?, accepttime=now() WHERE id = ?");
+		echo $mysqli -> error;
+		
+		$stmt->bind_param("iii", $userid, $status, $id);
+		$stmt->bind_result($notice);
+		$stmt->execute();
+		
+		if($stmt->fetch()){
+
+		}
+		else {
+			$notice = "Sõnumi valideerimisel esines viga.";
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		return $notice;
+	}
+
 	function readmsgforvalidation($editId){
 		$notice = "";
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
