@@ -72,6 +72,27 @@
 		
 		return $notice;
 	}
+
+	function allvalidmessages(){
+		$notice = "";
+		$accepted = 1;
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt = $mysqli->prepare("SELECT message FROM vpamsg WHERE accepted=? ORDER BY accepted DESC");
+		echo $mysqli -> error;
+		
+		$stmt->bind_param("i", $accepted);
+		$stmt->bind_result($msg);
+		$stmt->execute();
+		
+		while ($stmt -> fetch()){
+			$notice .= "<p>" . $msg . "</p> \n"; // .= means appending text
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		return $notice;
+	}
 	
 	function signin($email, $password){
 		$notice = "";
