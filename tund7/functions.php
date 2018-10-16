@@ -5,6 +5,41 @@
 	// Using a session
 	session_start();
 	
+	function getuserprofile($userId){
+		$userprofile = array();
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt = $mysqli->prepare("SELECT description, foreground, background FROM vpuserprofiles WHERE userid = ?");
+		echo $mysqli -> error;
+		
+		$stmt->bind_param("i", $userId);
+		$stmt->bind_result($descriptionFromDb, $foregroundFromDb, $backgroundFromDb);
+		$stmt->execute();
+		$stmt->fetch();
+		
+		// Set values to array
+		array_push($userprofile, $descriptionFromDb, $foregroundFromDb, $backgroundFromDb);
+		
+		$stmt->close();
+		$mysqli->close();
+		return $userprofile;
+	}
+	
+	function setuserprofile($userId, $description, $foreground, $background){
+		$notice = "";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt = $mysqli->prepare("REPLACE INTO vpuserprofiles (userid, description, foreground, background) VALUES (?, ?, ?, ?)"); // thanks SO https://stackoverflow.com/a/4205222 
+		echo $mysqli -> error;
+		
+		$stmt->bind_param("isss", $userId, $description, $foreground, $background);
+		$stmt->execute();
+		
+		$stmt->close();
+		$mysqli->close();
+		return $notice;
+	}
+	
 	function validatemsg($id, $status, $userid){
 		$notice = "";
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
@@ -47,7 +82,7 @@
 		$mysqli->close();
 		return $notice;
 	}
-	
+
 	function readallunvalidatedmessages(){
 		$notice = "<ul> \n";
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
