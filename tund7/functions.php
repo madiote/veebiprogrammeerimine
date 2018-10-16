@@ -128,10 +128,14 @@
 			$msghtml .= "<h3>" . $firstnameFromDb . " " . $lastnameFromDb . "</h3> \n";
 			$stmt2 -> execute();
 			while($stmt2 -> fetch()){
-				$msghtml .= "<p>";
+				$msghtml .= "<p><b>";
 				if ($acceptedFromDb == 1){
-					$msghtml .= "<b>✔️</b> " . $msgFromDb . "</p> \n";
+					$msghtml .= "✔️";
 				}
+				else {
+					$msghtml .= "❌";
+				}
+				$msghtml .= "</b> " . $msgFromDb . "</p> \n";
 			}
 		}
 		$stmt2 -> close();
