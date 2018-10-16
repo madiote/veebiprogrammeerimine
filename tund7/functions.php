@@ -93,14 +93,10 @@
 			$msghtml .= "<h3>" . $firstnameFromDb . " " . $lastnameFromDb . "</h3> \n";
 			$stmt2 -> execute();
 			while($stmt2 -> fetch()){
-				$msghtml .= "<p><b>";
+				$msghtml .= "<p>";
 				if ($acceptedFromDb == 1){
-					$msghtml .= "✔️";
+					$msghtml .= "<b>✔️</b> " . $msgFromDb . "</p> \n";
 				}
-				else {
-					$msghtml .= "❌";
-				}
-				$msghtml .= "</b> " . $msgFromDb . "</p> \n";
 			}
 		}
 		$stmt2 -> close();
