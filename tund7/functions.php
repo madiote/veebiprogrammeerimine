@@ -123,19 +123,26 @@
 		$stmt -> execute();
 		// Keep the result persistently usable in $stmt2
 		$stmt -> store_result();
-		
+
 		while ($stmt -> fetch()){
-			$msghtml .= "<h3>" . $firstnameFromDb . " " . $lastnameFromDb . "</h3> \n";
+			$userdata = "";
+			$userdata .= "<h3>" . $firstnameFromDb . " " . $lastnameFromDb . "</h3> \n";
 			$stmt2 -> execute();
+			$counter = 0;
 			while($stmt2 -> fetch()){
-				$msghtml .= "<p><b>";
+				$counter++;
+				$userdata .= "<p><b>";
 				if ($acceptedFromDb == 1){
-					$msghtml .= "✔️";
+					$userdata .= "✔️";
 				}
 				else {
-					$msghtml .= "❌";
+					$userdata .= "❌";
 				}
-				$msghtml .= "</b> " . $msgFromDb . "</p> \n";
+				$userdata .= "</b> " . $msgFromDb . "</p> \n";
+			}
+
+			if ($counter > 0){ // Add to HTML if the user did (in)validate messages
+				$msghtml .= $userdata;
 			}
 		}
 		$stmt2 -> close();
