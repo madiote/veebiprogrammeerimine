@@ -12,15 +12,35 @@
 	session_destroy();
 	header("Location: index_2.php");
 	exit();
-  }
-  
+	}
+	
+	//Get profile details
+	$profiledetails = getuserprofile($_SESSION["userId"]);
+	//print_r($profiledetails);
+	
+	// Use profile values if they exist
+	if ($profiledetails != null){
+		if ($profiledetails[1] != null){
+			$_SESSION["foregroundcolor"] = $profiledetails[1];
+		}
+		
+		if ($profiledetails[2] != null){
+			$_SESSION["backgroundcolor"] = $profiledetails[2];
+		}
+	}
 ?>
 
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
-	<title>Pealeht</title>
+		<title>Pealeht</title>
+		<style>
+			body {
+				background-color: <?php echo $_SESSION["backgroundcolor"]; ?>;
+				color: <?php echo $_SESSION["foregroundcolor"]; ?>
+			} 
+		</style>
   </head>
   <body>
     <h1>Pealeht</h1>

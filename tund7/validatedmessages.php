@@ -21,6 +21,12 @@
 <head>
   <meta charset="utf-8">
   <title>Anonüümsed sõnumid</title>
+  <style>
+			body {
+				background-color: <?php echo $_SESSION["backgroundcolor"]; ?>;
+				color: <?php echo $_SESSION["foregroundcolor"]; ?>
+			} 
+		</style>
 </head>
 <body>
   <h1>Sõnumid</h1>

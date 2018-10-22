@@ -16,14 +16,17 @@
 	if ($profiledetails != null){
 		if ($profiledetails[0] != null){
 			$descriptiontext = $profiledetails[0];
+			// Session variable not needed
 		}
 		
 		if ($profiledetails[1] != null){
 			$foregroundcolor = $profiledetails[1];
+			$_SESSION["foregroundcolor"] = $foregroundcolor;
 		}
 		
 		if ($profiledetails[2] != null){
 			$backgroundcolor = $profiledetails[2];
+			$_SESSION["backgroundcolor"] = $backgroundcolor;
 		}
 	}
 	
@@ -42,6 +45,7 @@
 		
 		if (isset($_POST["foreground"])){
 			$foregroundcolor = $_POST["foreground"];
+			$_SESSION["foregroundcolor"] = $foregroundcolor;
 		}
 		else {
 			$foregroundcolor = "#000000";
@@ -49,6 +53,7 @@
 
 		if (isset($_POST["background"])){
 			$backgroundcolor = $_POST["background"];
+			$_SESSION["backgroundcolor"] = $backgroundcolor;
 		}
 		else {
 			$backgroundcolor = "#ffffff";
@@ -62,6 +67,12 @@
 		<meta charset="utf-8">
 		<title>Anonüümse sõnumi lisamine</title>
 		<link rel="icon" href="https://www.tlu.ee/themes/tlu/images/favicons/favicon-32x32.png" type="image/png" sizes="16x16">
+		<style>
+			body {
+				background-color: <?php echo $_SESSION["backgroundcolor"]; ?>;
+				color: <?php echo $_SESSION["foregroundcolor"]; ?>
+			} 
+		</style>
 	</head>
 
 	<body>
