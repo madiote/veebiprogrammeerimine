@@ -9,7 +9,7 @@
 			body {
 				background-color: <?php echo $_SESSION["backgroundcolor"]; ?>;
 				color: <?php echo $_SESSION["foregroundcolor"]; ?>
-			} 
+			}
 		</style>
   </head>
   <body>
