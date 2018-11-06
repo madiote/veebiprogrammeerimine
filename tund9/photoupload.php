@@ -38,7 +38,7 @@
 			$timeStamp = microtime(1) * 10000; // multiply to make it an int
 			//$target_file = $target_dir . "vp_" . $timeStamp . "." . $imageFileType;
 			
-			$target_file_name = "vp_" . $timeStamp . "." . $target_file_name;
+			$target_file_name = "vp_" . $timeStamp . "." . $imageFileType;
 			$target_file = $target_dir . $target_file_name;
 
 			//$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
@@ -121,13 +121,14 @@
 				if ($imageFileType == "jpg" or $imageFileType == "jpeg"){
 					if(imagejpeg($myImage, $target_file, 95)){
 						echo "Fail ". basename( $_FILES["fileToUpload"]["name"]) . " on üles laaditud.";
+						addPhotoData($target_file_name, $_POST["altText"], $_POST["privacy"]);
 					}
 					else {
 						echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
 					}
 				}
 				else if ($imageFileType == "png"){
-					if(imagejpeg($myImage, $target_file, 95)){
+					if(imagepng($myImage, $target_file, 95)){
 						echo "Fail ". basename( $_FILES["fileToUpload"]["name"]) . " on üles laaditud.";
 					}
 					else {
@@ -135,7 +136,7 @@
 					}
 				}
 				else if ($imageFileType == "gif"){
-					if(imagejpeg($myImage, $target_file, 95)){
+					if(imagegif($myImage, $target_file, 95)){
 						echo "Fail ". basename( $_FILES["fileToUpload"]["name"]) . " on üles laaditud.";
 					}
 					else {
@@ -176,7 +177,7 @@
 	<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post" enctype="multipart/form-data">
 		<label for="fileToUpload">Vali üleslaaditav pilt:</label><br/>
 		<input type="file" name="fileToUpload" id="fileToUpload"><br/>
-		<label>Pildi kirjeldus (max 256. tähemärki)</label>
+		<label>Pildi kirjeldus (max 256. tähemärki)</label><br/>
 		<input type="text" name="altText"><br/>
 		<label>Pildi kasutusõigused</label><br/>
 		<input type="radio" name="privacy" value="1"><label>Avalik</label>

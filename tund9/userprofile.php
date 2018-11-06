@@ -20,12 +20,17 @@
 		}
 		
 		if ($profiledetails[1] != null){
-			$foregroundcolor = $profiledetails[1];
+			$profilepic = $profiledetails[1];
+			$_SESSION["profilepic"] = $profilepic;
+		}
+
+		if ($profiledetails[2] != null){
+			$foregroundcolor = $profiledetails[2];
 			$_SESSION["foregroundcolor"] = $foregroundcolor;
 		}
 		
-		if ($profiledetails[2] != null){
-			$backgroundcolor = $profiledetails[2];
+		if ($profiledetails[3] != null){
+			$backgroundcolor = $profiledetails[3];
 			$_SESSION["backgroundcolor"] = $backgroundcolor;
 		}
 	}
@@ -36,6 +41,13 @@
 		setuserprofile($_SESSION["userId"], $description, $_POST["foreground"], $_POST["background"]);
 		
 		// Show sent data on the page
+		if (isset($_POST["profilePicUpload"])){
+			uploadProfilePic($_POST["profilePicUpload"]);
+		}
+		else {
+			// Keep the old profile pic
+		}
+
 		if (isset($_POST["description"])){
 			$descriptiontext = $_POST["description"];
 		}
@@ -65,6 +77,10 @@
 ?>
 
 		<form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+			<label>Foto:</label><br>
+			<img src="<?php echo $profilepic; ?>" alt="<?php echo $_SESSION["userId"]; ?>">
+			<br>
+			<input type="file" id="profilePicUpload"><br/>
 			<label>Kirjeldus (max 300 märki):</label>
 			<br>
 			<textarea name="description" rows="4" cols="64" maxlength="300"><?php echo $descriptiontext; ?></textarea>
@@ -74,7 +90,7 @@
 			<br>
 			<label>Tausta värv:</label>
 			<input type="color" name="background" value="<?php echo $backgroundcolor; ?>">
-			</br>
+			<br>
 			<input type="submit" name="setUserProfile" value="Salvesta profiil">
 		</form>
 		<ul>

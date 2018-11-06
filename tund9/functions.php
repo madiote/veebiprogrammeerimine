@@ -5,20 +5,167 @@
 	// Using a session
 	session_start();
 	
+	function uploadProfilePic(){
+		$target_dir = "../vp_profilepic_uploads/";
+		$uploadOk = 1;
+		if(!empty($_FILES["fileToUpload"]["tmp_name"])) {
+			$imageFileType = strtolower(pathinfo(basename($_FILES["fileToUpload"]["name"]),PATHINFO_EXTENSION));
+			$timeStamp = microtime(1) * 10000; // multiply to make it an int
+			
+			$target_file_name = "vp_" . $_SESSION["userId"] . "_profile_" . $timeStamp . "." . $imageFileType;
+			$target_file = $target_dir . $target_file_name;
+			
+			// Check if image file is a actual image or fake image
+			$check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+			if($check !== false) {
+				//echo "Fail on " . $check["mime"] . " pilt.";
+				$uploadOk = 1;
+			} else {
+				echo "Fail ei ole pilt.";
+				$uploadOk = 0;
+			}
+			
+			// Check if file already exists
+			if (file_exists($target_file)) {
+				echo "Vabandust, see pilt on juba olemas.";
+				$uploadOk = 0;
+			}
+			// Check file size
+			if ($_FILES["fileToUpload"]["size"] > 2500000) {
+				echo "Vabandust, see pilt on liiga suur.";
+				$uploadOk = 0;
+			}
+			// Allow certain file formats
+			if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+			&& $imageFileType != "gif" ) {
+				echo "Vabandust, siia saab üles laadida vaid JPG, JPEG, PNG ja GIF faile.";
+				$uploadOk = 0;
+			}
+			// Check if $uploadOk is set to 0 by an error
+			if ($uploadOk == 0) {
+				echo "Vabandust, seda faili ei saanud üles laadida.";
+			// If everything is ok, try to upload the file
+			} else {
+				// Create an image object according to filetype
+				if ($imageFileType == "jpg" or $imageFileType == "jpeg"){
+					$myTempImage = imagecreatefromjpeg($_FILES["fileToUpload"]["tmp_name"]);
+				}
+				else if ($imageFileType == "png"){
+					$myTempImage = imagecreatefrompng($_FILES["fileToUpload"]["tmp_name"]);
+				}
+				else if ($imageFileType == "gif"){
+					$myTempImage = imagecreatefromgif($_FILES["fileToUpload"]["tmp_name"]);
+				}
+
+				// Crop from the center - https://stackoverflow.com/a/6894390
+
+				$imageWidth = imagesx($myTempImage);
+				$imageHeight = imagesy($myTempImage);
+				$imageCenterX = round($imageWidth / 2);
+				$imageCenterY = round($imageHeight / 2);
+				
+				$cropWidth  = 300;
+				$cropHeight = 300;
+				$cropWidthHalf  = round($cropWidth / 2);
+				$cropHeightHalf = round($cropHeight / 2);
+
+				$x1 = max(0, $centreX - $cropWidthHalf);
+				$y1 = max(0, $centreY - $cropHeightHalf);
+
+				$x2 = min($imageWidth, $imageCenterX + $cropWidthHalf);
+				$y2 = min($imageHeight, $imageCenterY + $cropHeightHalf);
+
+				$myImage = imagecopy($myImage, $myTempImage, $x2, $y2, $x1, $y1, $imageWidth, $imageHeight);
+
+				// Save file back according to original filetype
+				if ($imageFileType == "jpg" or $imageFileType == "jpeg"){
+					if(imagejpeg($myImage, $target_file, 95)){
+						echo "Fail ". basename( $_FILES["fileToUpload"]["name"]) . " on üles laaditud.";
+						addPhotoData($target_file_name, $_POST["altText"], $_POST["privacy"]);
+					}
+					else {
+						echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
+					}
+				}
+				else if ($imageFileType == "png"){
+					if(imagepng($myImage, $target_file, 95)){
+						echo "Fail ". basename( $_FILES["fileToUpload"]["name"]) . " on üles laaditud.";
+					}
+					else {
+						echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
+					}
+				}
+				else if ($imageFileType == "gif"){
+					if(imagegif($myImage, $target_file, 95)){
+						echo "Fail ". basename( $_FILES["fileToUpload"]["name"]) . " on üles laaditud.";
+					}
+					else {
+						echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
+					}
+				}
+
+				imagedestroy($myTempImage);
+				imagedestroy($myImage);
+			}
+		}
+	}
+
+	function addProfilePicToDb($filename){
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt = $mysqli->prepare("INSERT INTO vpprofilephotos (userid, filename) VALUES (?, ?)");
+		echo $mysqli -> error;
+
+		$stmt -> bind_param("is", $_SESSION["userId"], $filename);
+
+		if($stmt -> execute()){
+			//echo "Andmed on andmebaasi sisestatud!";
+		}
+		else {
+			echo "Andmete sisestamisel esines viga." . $stmt -> error;
+		}
+
+		$stmt -> close();
+		$mysqli -> close();
+	}
+
+	function addPhotoData($filename, $alttext, $privacy){
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt = $mysqli->prepare("INSERT INTO vpphotos (userid, filename, alttext, privacy) VALUES (?, ?, ?, ?)");
+		echo $mysqli -> error;
+		
+		if(empty($privacy) or $privacy > 3 or $privacy < 1){
+			$privacy = 3;
+		}
+
+		$stmt -> bind_param("issi", $_SESSION["userId"], $filename, $alttext, $privacy);
+
+		if($stmt -> execute()){
+			//echo "Andmed on andmebaasi sisestatud!";
+		}
+		else {
+			echo "Andmete sisestamisel esines viga." . $stmt -> error;
+		}
+
+		$stmt -> close();
+		$mysqli -> close();
+	}
+
 	function getuserprofile($userId){
 		$userprofile = array();
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
 		
-		$stmt = $mysqli->prepare("SELECT description, foreground, background FROM vpuserprofiles WHERE userid = ?");
+		$stmt = $mysqli->prepare("SELECT profilepic, description, foreground, background FROM vpuserprofiles WHERE userid = ?");
 		echo $mysqli -> error;
 		
 		$stmt->bind_param("i", $userId);
-		$stmt->bind_result($descriptionFromDb, $foregroundFromDb, $backgroundFromDb);
+		$stmt->bind_result($profilepicFromDb, $descriptionFromDb, $foregroundFromDb, $backgroundFromDb);
 		$stmt->execute();
 		$stmt->fetch();
 		
 		// Set values to array
-		array_push($userprofile, $descriptionFromDb, $foregroundFromDb, $backgroundFromDb);
+		array_push($userprofile, $profilepicFromDb, $descriptionFromDb, $foregroundFromDb, $backgroundFromDb);
 		
 		$stmt->close();
 		$mysqli->close();
