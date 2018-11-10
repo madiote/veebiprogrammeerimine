@@ -14,18 +14,27 @@ if(isset($_GET["logout"])){
 }
     
 //Get profile details
+$profilepicpath = "../vp_profilepic_uploads/";
+$noprofilepic = "../vp_picfiles/vp_user_generic.png";
 $profiledetails = getuserprofile($_SESSION["userId"]);
 
 // Use profile values if they exist
 if ($profiledetails != null){
     if ($profiledetails[0] != null){
-        $descriptiontext = $profiledetails[0];
-        // Session variable not needed
-    }
-    
-    if ($profiledetails[1] != null){
-        $profilepic = $profiledetails[1];
+        $picfile = getProfilePicFileById($profiledetails[0]);
+        if ($picfile != null){
+            $profilepic = $profilepicpath . $picfile;
+        }
+        else {
+            $profilepic = $profilepicpath . $noprofilepic;
+        }
         $_SESSION["profilepic"] = $profilepic;
+    }
+
+    if ($profiledetails[1] != null){
+        $descriptiontext = $profiledetails[1];
+        //$_SESSION["description"] = $descriptiontext;
+	    //Uncomment if you need the description text in session
     }
 
     if ($profiledetails[2] != null){

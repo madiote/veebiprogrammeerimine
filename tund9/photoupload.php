@@ -103,6 +103,7 @@
 				else if ($imageFileType == "png"){
 					if(imagepng($myImage, $target_file, 95)){
 						echo "Fail ". basename( $_FILES["fileToUpload"]["name"]) . " on üles laaditud.";
+						addPhotoData($target_file_name, $_POST["altText"], $_POST["privacy"]);
 					}
 					else {
 						echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
@@ -111,6 +112,7 @@
 				else if ($imageFileType == "gif"){
 					if(imagegif($myImage, $target_file, 95)){
 						echo "Fail ". basename( $_FILES["fileToUpload"]["name"]) . " on üles laaditud.";
+						addPhotoData($target_file_name, $_POST["altText"], $_POST["privacy"]);
 					}
 					else {
 						echo "Vabandust, faili üleslaadimisel esines tehniline viga.";

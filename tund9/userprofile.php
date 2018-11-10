@@ -10,13 +10,18 @@
 		// Show sent data on the page
 		if (isset($_POST["profilePicUpload"])){
 			uploadProfilePic($_POST["profilePicUpload"]);
+
+			$profilepic = $profilepicpath . $_POST["profilePicUpload"];
+			$_SESSION["profilePic"] = $profilepic;
 		}
 		else {
-			// Keep the old profile pic
+			$profilepic = $profilepicpath . $noprofilepic;
 		}
 
 		if (isset($_POST["description"])){
 			$descriptiontext = $_POST["description"];
+			//$_SESSION["description"] = $descriptiontext;
+			//Uncomment if you need the description text in session
 		}
 		else {
 			$descriptiontext = "Pole iseloomustust lisanud.";
@@ -37,17 +42,19 @@
 		else {
 			$backgroundcolor = "#ffffff";
 		}	
-	}
 
-	$pageTitle = "Anonüümne sõnum";
+	}
+	$pageTitle = "Profiiliteave";
 	require("header.php");
 ?>
 
 <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+	<label>Nimi:</label>
+	<input type="text" value="<?php echo $_SESSION["firstName"] . " " . $_SESSION["lastName"]; ?>" disabled><br>
 	<label>Foto:</label><br>
-	<img src="<?php echo $profilepic; ?>" alt="<?php echo $_SESSION["userId"]; ?>">
+	<img src="<?php echo $profilepic; ?>" alt="<?php echo $_SESSION["firstName"] . " " . $_SESSION["lastName"]; ?>">
 	<br>
-	<input type="file" id="profilePicUpload"><br/>
+	<input type="file" id="profilePicUpload"><br>
 	<label>Kirjeldus (max 300 märki):</label>
 	<br>
 	<textarea name="description" rows="4" cols="64" maxlength="300"><?php echo $descriptiontext; ?></textarea>

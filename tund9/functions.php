@@ -5,6 +5,50 @@
 	// Using a session
 	session_start();
 	
+	function getProfilePicIdByFile($file){
+		$picfile = "";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt = $mysqli->prepare("SELECT id FROM vpprofilephotos WHERE filename = ?");
+		echo $mysqli -> error;
+
+		$stmt -> bind_param("s", $file);
+
+		if($stmt -> execute()){
+			$stmt->bind_result($picid);
+		}
+		else {
+			echo "Andmete sisestamisel esines viga." . $stmt -> error;
+		}
+
+		$stmt -> close();
+		$mysqli -> close();
+
+		return $picid;
+	}
+
+	function getProfilePicFileById($id){
+		$picfile = "";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		
+		$stmt = $mysqli->prepare("SELECT filename FROM vpprofilephotos WHERE id = ?");
+		echo $mysqli -> error;
+
+		$stmt -> bind_param("i", $id);
+
+		if($stmt -> execute()){
+			$stmt->bind_result($picfile);
+		}
+		else {
+			echo "Andmete sisestamisel esines viga." . $stmt -> error;
+		}
+
+		$stmt -> close();
+		$mysqli -> close();
+
+		return $picfile;
+	}
+
 	function uploadProfilePic(){
 		$target_dir = "../vp_profilepic_uploads/";
 		$uploadOk = 1;
@@ -81,7 +125,7 @@
 				if ($imageFileType == "jpg" or $imageFileType == "jpeg"){
 					if(imagejpeg($myImage, $target_file, 95)){
 						echo "Fail ". basename( $_FILES["fileToUpload"]["name"]) . " on üles laaditud.";
-						addPhotoData($target_file_name, $_POST["altText"], $_POST["privacy"]);
+						addProfilePicToDb($target_file_name);
 					}
 					else {
 						echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
@@ -90,6 +134,7 @@
 				else if ($imageFileType == "png"){
 					if(imagepng($myImage, $target_file, 95)){
 						echo "Fail ". basename( $_FILES["fileToUpload"]["name"]) . " on üles laaditud.";
+						addProfilePicToDb($target_file_name);
 					}
 					else {
 						echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
@@ -98,6 +143,7 @@
 				else if ($imageFileType == "gif"){
 					if(imagegif($myImage, $target_file, 95)){
 						echo "Fail ". basename( $_FILES["fileToUpload"]["name"]) . " on üles laaditud.";
+						addProfilePicToDb($target_file_name);
 					}
 					else {
 						echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
@@ -106,26 +152,47 @@
 
 				imagedestroy($myTempImage);
 				imagedestroy($myImage);
+
+				return $target_file_name;
 			}
 		}
 	}
 
 	function addProfilePicToDb($filename){
+		$picfile = "";
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
 		
+		// Create a new entry in profile photos table
 		$stmt = $mysqli->prepare("INSERT INTO vpprofilephotos (userid, filename) VALUES (?, ?)");
 		echo $mysqli -> error;
 
 		$stmt -> bind_param("is", $_SESSION["userId"], $filename);
 
 		if($stmt -> execute()){
-			//echo "Andmed on andmebaasi sisestatud!";
+			$stmt->bind_result($picfile);
 		}
 		else {
 			echo "Andmete sisestamisel esines viga." . $stmt -> error;
 		}
 
 		$stmt -> close();
+
+		$picid = getProfilePicIdByFile($picfile);
+
+		// Update profile data table to have profile pic id
+		$stmt2 = $mysqli->prepare("UPDATE vpuserprofiles SET profilepic = ? WHERE userid = ?");
+		echo $mysqli -> error;
+
+		$stmt2 -> bind_param("ii", $picid, $_SESSION["userId"]);
+
+		if($stmt2 -> execute()){
+			//echo "Andmed on andmebaasi sisestatud!";
+		}
+		else {
+			echo "Andmete sisestamisel esines viga." . $stmt2 -> error;
+		}
+
+		$stmt2 -> close();
 		$mysqli -> close();
 	}
 
