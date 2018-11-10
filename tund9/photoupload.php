@@ -138,25 +138,18 @@
 
 	$pageTitle = "Fotode üleslaadimine";
 	require("header.php");
-?>
+?>		
+<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post" enctype="multipart/form-data">
+	<label for="fileToUpload">Vali üleslaaditav pilt:</label><br/>
+	<input type="file" name="fileToUpload" id="fileToUpload"><br/>
+	<label>Pildi kirjeldus (max 256. tähemärki)</label><br/>
+	<input type="text" name="altText"><br/>
+	<label>Pildi kasutusõigused</label><br/>
+	<input type="radio" name="privacy" value="1"><label>Avalik</label>
+	<input type="radio" name="privacy" value="2"><label>Sisseloginud kasutajatele</label>
+	<input type="radio" name="privacy" value="3" checked><label>Privaatne</label><br/>
+	<input type="submit" value="Laadi pilt üles" name="submitImage">
+</form>
 
-	<hr><p>Olete sisseloginud nimega: <?php echo $_SESSION["firstName"] . " " . $_SESSION["lastName"]; ?>.</p> 
-	<ul>
-		<li><a href="?logout=1">Logi välja</a></li>
-		<li><a href="main.php">Tagasi</a></li>
-	</ul>
-
-		
-	<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post" enctype="multipart/form-data">
-		<label for="fileToUpload">Vali üleslaaditav pilt:</label><br/>
-		<input type="file" name="fileToUpload" id="fileToUpload"><br/>
-		<label>Pildi kirjeldus (max 256. tähemärki)</label><br/>
-		<input type="text" name="altText"><br/>
-		<label>Pildi kasutusõigused</label><br/>
-		<input type="radio" name="privacy" value="1"><label>Avalik</label>
-		<input type="radio" name="privacy" value="2"><label>Sisseloginud kasutajatele</label>
-		<input type="radio" name="privacy" value="3" checked><label>Privaatne</label><br/>
-		<input type="submit" value="Laadi pilt üles" name="submitImage">
-	</form>
-
-	<?php require("footer.php"); ?>
+<?php require("footer-account.php"); ?>
+<?php require("footer.php"); ?>

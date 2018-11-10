@@ -7,7 +7,6 @@
 	$pageTitle = "Sõnumid";
 	require("header.php");
 ?>
-<!DOCTYPE html>
-		<?php echo $notice; ?>
-		
-		<?php require("footer.php"); ?>
+<?php echo $notice; ?>
+<?php require("footer-account.php"); ?>
+<?php require("footer.php"); ?>

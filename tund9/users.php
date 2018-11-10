@@ -7,16 +7,9 @@
   $pageTitle = "Kasutajad";
 	require("header.php");
 ?>
-
-  <hr>
-  <ul>
-	<li><a href="?logout=1">Logi välja</a>!</li>
-	<li><a href="main.php">Tagasi</a> pealehele!</li>
-  </ul>
-  <hr>
-  <ul><?php echo $userlist; ?></ul>
-  
-  <?php require("footer.php"); ?>
+<ul><?php echo $userlist; ?></ul>
+<?php require("footer-account.php"); ?>
+<?php require("footer.php"); ?>
 
 
 

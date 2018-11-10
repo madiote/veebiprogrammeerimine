@@ -6,18 +6,11 @@
 
   $pageTitle = "Anonüümsed sõnumid";
 	require("header.php");
-?>
+?>  
+<?php echo $msglist; ?>
 
-  <hr>
-  <ul>
-	<li><a href="?logout=1">Logi välja</a>!</li>
-	<li><a href="main.php">Tagasi</a> pealehele!</li>
-  </ul>
-  <hr>
-  
-  <?php echo $msglist; ?>
-  
-  <?php require("footer.php"); ?>
+<?php require("footer-account.php"); ?>  
+<?php require("footer.php"); ?>
 
 
 
