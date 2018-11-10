@@ -1,5 +1,7 @@
 <?php
 	require("functions.php");
+	require("header-account.php");
+
 	$notice = readallmessages();
 	
 	$pageTitle = "Sõnumid";

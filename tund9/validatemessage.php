@@ -1,18 +1,6 @@
 <?php
-  require("functions.php");
-  
-  // If not signed in
-  if(!isset($_SESSION["userId"])){
-	header("Location: index_2.php"); // redirect user back
-	exit();
-  }
-  
-  // When requesting signout
-  if(isset($_GET["logout"])){
-	session_destroy();
-	header("Location: index_2.php");
-	exit();
-  }
+	require("functions.php");
+	require("header-account.php");
   
   // Validate
   if(isset($_POST["submitValidation"])){
