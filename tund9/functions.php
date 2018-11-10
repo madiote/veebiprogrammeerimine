@@ -153,6 +153,8 @@
 				imagedestroy($myTempImage);
 				imagedestroy($myImage);
 
+				//Set session variable right away
+				$_SESSION["profilePic"] = $target_file;
 				return $target_file_name;
 			}
 		}
@@ -247,7 +249,15 @@
 		echo $mysqli -> error;
 		
 		$stmt->bind_param("isss", $userId, $description, $foreground, $background);
-		$stmt->execute();
+		if($stmt->execute()){
+			$notice = "Profiil edukalt uuendatud!";
+			// Also update session variables
+			$_SESSION["foregroundcolor"] = $foreground;
+			$_SESSION["backgroundcolor"] = $background;
+		}
+		else {
+			$notice = "Profiili uuendamisel esines viga!" . $stmt->error;
+		}
 		
 		$stmt->close();
 		$mysqli->close();

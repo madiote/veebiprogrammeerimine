@@ -5,13 +5,12 @@
 	// Set profile details on submit
 	if (isset($_POST["setUserProfile"])){
 		$description = test_input($_POST["description"]);
-		setuserprofile($_SESSION["userId"], $description, $_POST["foreground"], $_POST["background"]);
-		
+		setuserprofile($_SESSION["userId"], $description, $_POST["foreground"], $_POST["background"]); // Image sent by uploadProfilePic
+		$profilepic = uploadProfilePic($_POST["profilePicUpload"]); // TODO: Does not return anything?
+
 		// Show sent data on the page
 		if (isset($_POST["profilePicUpload"])){
-			uploadProfilePic($_POST["profilePicUpload"]);
-
-			$profilepic = $profilepicpath . $_POST["profilePicUpload"];
+			$profilepic = $profilepicpath . $profilepic; // $profilepicpath courtesy of header-account.php
 			$_SESSION["profilePic"] = $profilepic;
 		}
 		else {
@@ -54,7 +53,7 @@
 	<label>Foto:</label><br>
 	<img src="<?php echo $profilepic; ?>" alt="<?php echo $_SESSION["firstName"] . " " . $_SESSION["lastName"]; ?>">
 	<br>
-	<input type="file" id="profilePicUpload"><br>
+	<input type="file" name="profilePicUpload"><br>
 	<label>Kirjeldus (max 300 märki):</label>
 	<br>
 	<textarea name="description" rows="4" cols="64" maxlength="300"><?php echo $descriptiontext; ?></textarea>
