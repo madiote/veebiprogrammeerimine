@@ -2,6 +2,19 @@
 	require("functions.php");
 	require("header-account.php");
 
+	require("classes/Photoupload.class.php");
+
+	/*
+	require("classes/Test.class.php");
+	$myNumber = new Test(7);
+	echo "Avalik arv on: " . $myNumber -> publicNumber; // 28
+	//echo "Salajane arv on: " . $myNumber -> secretNumber; // veateade
+	$myNumber -> tellThings(); // käivita klass
+	$mySNumber = new Test(9);
+	echo "Teine avalik arv on: " . $mySNumber -> publicNumber; // 28
+	unset($myNumber); // lõpeta klassi täitmine ära, käita __destruct
+	*/
+
 	// Image submission https://www.w3schools.com/php/php_file_upload.asp
 	$target_dir = "../vp_pic_uploads/";
 	$uploadOk = 1;
@@ -48,79 +61,21 @@
 				echo "Vabandust, seda faili ei saanud üles laadida.";
 			// if everything is ok, try to upload file
 			} else {
-				// Loome vastavalt failitüübile pildiobjekti
+				$myPhoto = new Photoupload($_FILES["fileToUpload"]["tmp_name"], $imageFileType);
+				$myPhoto -> changePhotoSize(600, 400);
+				$myPhoto -> addWatermark();
+				$myPhoto -> addText();
+				$savesuccess = $myPhoto -> saveFile($target_file);
+				unset($myPhoto);
 
-				if ($imageFileType == "jpg" or $imageFileType == "jpeg"){
-					$myTempImage = imagecreatefromjpeg($_FILES["fileToUpload"]["tmp_name"]);
-				}
-				else if ($imageFileType == "png"){
-					$myTempImage = imagecreatefrompng($_FILES["fileToUpload"]["tmp_name"]);
-				}
-				else if ($imageFileType == "gif"){
-					$myTempImage = imagecreatefromgif($_FILES["fileToUpload"]["tmp_name"]);
-				}
-
-				$imageWidth = imagesx($myTempImage);
-				$imageHeight = imagesy($myTempImage);
-				// Arvuta suuruse suhtarv
-				if ($imageWidth > $imageHeight){
-					$sizeRatio = $imageWidth / 600;
+				// If upload succeeded
+				if ($savesuccess == 1){
+					addPhotoData($target_file_name, $_POST["altText"], $_POST["privacy"]);
+					echo "Pilt üles laaditud!";
 				}
 				else {
-					$sizeRatio = $imageHeight / 400;
+					echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
 				}
-
-				$newWidth = round($imageWidth / $sizeRatio);
-				$newHeight = round($imageHeight / $sizeRatio);
-
-				$myImage = resizeImage($myTempImage, $imageWidth, $imageHeight, $newWidth, $newHeight);
-
-				// Add watermark image
-
-				$waterMark = imagecreatefrompng("../vp_picfiles/vp_logo_w100_overlay.png");
-				$waterMarkWidth = imagesx($waterMark);
-				$waterMarkHeight = imagesy($waterMark);
-				$waterMarkPosX = $newWidth - $waterMarkWidth - 10; // 10 px as padding
-				$waterMarkPosY = $newHeight - $waterMarkHeight - 10;
-
-				imagecopy($myImage, $waterMark, $waterMarkPosX, $waterMarkPosY, 0, 0, $waterMarkWidth, $waterMarkHeight);
-
-				// Add watermark text
-				$textToImage = "Veebiprogrammeerimine";
-				$textColor = imagecolorallocatealpha($myImage, 255, 255, 255, 60);
-				imagettftext($myImage, 20, 0, 10, 30, $textColor, "../vp_picfiles/Roboto-Bold.ttf", $textToImage);
-
-				// Save file back according to original filetype
-				if ($imageFileType == "jpg" or $imageFileType == "jpeg"){
-					if(imagejpeg($myImage, $target_file, 95)){
-						echo "Fail ". basename( $_FILES["fileToUpload"]["name"]) . " on üles laaditud.";
-						addPhotoData($target_file_name, $_POST["altText"], $_POST["privacy"]);
-					}
-					else {
-						echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
-					}
-				}
-				else if ($imageFileType == "png"){
-					if(imagepng($myImage, $target_file, 95)){
-						echo "Fail ". basename( $_FILES["fileToUpload"]["name"]) . " on üles laaditud.";
-						addPhotoData($target_file_name, $_POST["altText"], $_POST["privacy"]);
-					}
-					else {
-						echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
-					}
-				}
-				else if ($imageFileType == "gif"){
-					if(imagegif($myImage, $target_file, 95)){
-						echo "Fail ". basename( $_FILES["fileToUpload"]["name"]) . " on üles laaditud.";
-						addPhotoData($target_file_name, $_POST["altText"], $_POST["privacy"]);
-					}
-					else {
-						echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
-					}
-				}
-
-				imagedestroy($myTempImage);
-				imagedestroy($myImage);
 
 				/* if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
 					echo "Fail ". basename( $_FILES["fileToUpload"]["name"]). " on üles laaditud.";
@@ -129,13 +84,6 @@
 				} */
 			}
 		}
-	}
-
-	function resizeImage($image, $ow, $oh, $w, $h){
-		$newImage = imagecreatetruecolor($w, $h);
-		imagecopyresampled($newImage, $image, 0, 0, 0, 0, $w, $h, $ow, $oh);
-
-		return $newImage;
 	}
 
 	$pageTitle = "Fotode üleslaadimine";
