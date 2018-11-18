@@ -15,75 +15,55 @@
 	unset($myNumber); // lõpeta klassi täitmine ära, käita __destruct
 	*/
 
+	$notice = "";
 	// Image submission https://www.w3schools.com/php/php_file_upload.asp
-	$target_dir = "../vp_pic_uploads/";
-	$uploadOk = 1;
 	if(isset($_POST["submitImage"])) { // Check for image submission
 		if(!empty($_FILES["fileToUpload"]["tmp_name"])) {
-			$imageFileType = strtolower(pathinfo(basename($_FILES["fileToUpload"]["name"]),PATHINFO_EXTENSION));
 			$timeStamp = microtime(1) * 10000; // multiply to make it an int
-			//$target_file = $target_dir . "vp_" . $timeStamp . "." . $imageFileType;
-			
-			$target_file_name = "vp_" . $timeStamp . "." . $imageFileType;
+			$target_dir = "../vp_pic_uploads/";
+			$target_file_name = "vp_" . $timeStamp;
 			$target_file = $target_dir . $target_file_name;
 
-			//$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
-			//$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-			
-			// Check if image file is a actual image or fake image
-			$check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-			if($check !== false) {
-				//echo "Fail on " . $check["mime"] . " pilt.";
-				$uploadOk = 1;
-			} else {
-				echo "Fail ei ole pilt.";
-				$uploadOk = 0;
-			}
-			
-			// Check if file already exists
-			if (file_exists($target_file)) {
-				echo "Vabandust, see pilt on juba olemas.";
-				$uploadOk = 0;
-			}
-			// Check file size
-			if ($_FILES["fileToUpload"]["size"] > 2500000) {
-				echo "Vabandust, see pilt on liiga suur.";
-				$uploadOk = 0;
-			}
-			// Allow certain file formats
-			if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-			&& $imageFileType != "gif" ) {
-				echo "Vabandust, siia saab üles laadida vaid JPG, JPEG, PNG ja GIF faile.";
-				$uploadOk = 0;
-			}
-			// Check if $uploadOk is set to 0 by an error
-			if ($uploadOk == 0) {
-				echo "Vabandust, seda faili ei saanud üles laadida.";
-			// if everything is ok, try to upload file
-			} else {
-				$myPhoto = new Photoupload($_FILES["fileToUpload"]["tmp_name"], $imageFileType);
-				$myPhoto -> changePhotoSize(600, 400);
-				$myPhoto -> addWatermark();
-				$myPhoto -> addText();
-				$savesuccess = $myPhoto -> saveFile($target_file);
-				unset($myPhoto);
+            $myPhoto = new Photoupload($_FILES["fileToUpload"]["tmp_name"]);
+            $uploadsuccess = $myPhoto -> suitableImage();
 
-				// If upload succeeded
-				if ($savesuccess == 1){
-					addPhotoData($target_file_name, $_POST["altText"], $_POST["privacy"]);
-					echo "Pilt üles laaditud!";
-				}
-				else {
-					echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
-				}
+            if ($uploadsuccess == 0){
 
-				/* if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-					echo "Fail ". basename( $_FILES["fileToUpload"]["name"]). " on üles laaditud.";
-				} else {
-					echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
-				} */
-			}
-		}
+                echo "Faili tüüp on " . $myPhoto -> getFileType(); // TODO: doesn't even echo the text?
+                $target_file_name .= "." . $myPhoto -> getFileType(); // append filetype to target file name
+                $target_file = $target_dir . $target_file_name; // overwrite target_file again
+
+                $myPhoto -> changePhotoSize(600, 400);
+                $myPhoto -> addWatermark();
+                $myPhoto -> addText();
+                $savesuccess = $myPhoto -> saveFile($target_file);
+                unset($myPhoto);
+
+                // If upload succeeded
+                if ($savesuccess == 1){
+                    addPhotoData($target_file_name, $_POST["altText"], $_POST["privacy"]);
+                    echo "Pilt üles laaditud!";
+                }
+                else {
+                    echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
+                }
+            }
+            else if ($uploadsuccess == 1){
+                $notice = "Tegu ei ole sobiva JPG, PNG või GIF-pildiga.";
+            }
+            else if ($uploadsuccess == 2){
+                $notice = "Pilt on juba olemas.";
+            }
+            else if ($uploadsuccess == 3){
+                $notice = "Antud pilt on liiga suur.";
+            }
+
+            /* if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+                $notice = "Fail ". basename( $_FILES["fileToUpload"]["name"]). " on üles laaditud.";
+            } else {
+                $notice = "Vabandust, faili üleslaadimisel esines tehniline viga.";
+            } */
+        }
 	}
 
 	$pageTitle = "Fotode üleslaadimine";
@@ -99,6 +79,7 @@
 	<input type="radio" name="privacy" value="2"><label>Sisseloginud kasutajatele</label>
 	<input type="radio" name="privacy" value="3" checked><label>Privaatne</label><br/>
 	<input type="submit" value="Laadi pilt üles" name="submitImage">
+    <b><?php echo $notice; ?></b>
 </form>
 
 <?php require("footer-account.php"); ?>

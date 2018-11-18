@@ -1,20 +1,61 @@
 <?php
     class Photoupload 
     {
-        private $myTempImage;
-        private $imageFileType; 
-        private $tempName;
-        private $myImage;
+        private $tempName;      // Intial name reference
+        private $imageFileType; // The file type
+        private $myTempImage;   // Initial image object
+        private $myImage;       // Output image object
 
-        public function __construct($file, $type) {
+        public function __construct($file) {
             $this -> tempName = $file;
-            $this -> imageFileType = $type;
+            $this -> suitableImage();
             $this -> imageFromFile();
         }
 
         public function __destruct() {
-            imagedestroy($this -> myTempImage);
-            imagedestroy($this -> myImage);
+            // Kill image objects
+
+            if($this -> myTempImage != null){
+                imagedestroy($this -> myTempImage);
+            }
+
+            if($this -> myImage != null) {
+                imagedestroy($this->myImage);
+            }
+        }
+
+        public function getFileType(){
+            // Assume the file type by file extension
+
+            $this -> imageFileType = strtolower(pathinfo(basename($this -> tempName),PATHINFO_EXTENSION));
+
+            return $this -> imageFileType;
+        }
+
+        public function suitableImage(){
+            // Check if the image is suitable for upload
+
+            $notice = 0;
+            $check = getimagesize($this -> tempName);
+            $this -> getFileType();
+
+            if ($this -> imageFileType != "jpg" // Check if it claims to be an image
+                && $this -> imageFileType != "jpeg"
+                && $this -> imageFileType != "png"
+                && $this -> imageFileType != "gif" ) {
+                $notice = 1;
+            }
+            else if($check !== false) { // Check if it is sized like an image
+                $notice = 1;
+            }
+            else if (file_exists($this -> tempName)) { // Check if file already exists
+                $notice = 2;
+            }
+            else if ($this -> tempName > 2500000) {  // Check file size
+                $notice = 3;
+            }
+
+            return $notice;
         }
 
         private function imageFromFile(){
@@ -61,10 +102,11 @@
             return $newImage;
         }
 
-        public function addWatermark(){
+        public function addWatermark($waterMark = null){
             // Append watermark (image) to the photo
-
-            $waterMark = imagecreatefrompng("../vp_picfiles/vp_logo_w100_overlay.png"); // relative to the php file that runs the class
+            if ($waterMark == null){
+                $waterMark = imagecreatefrompng("../vp_picfiles/vp_logo_w100_overlay.png"); // relative to the php file that runs the class
+            }
             $waterMarkWidth = imagesx($waterMark);
             $waterMarkHeight = imagesy($waterMark);
             $waterMarkPosX = imagesx($this -> myImage) - $waterMarkWidth - 10; // 10 px as padding
@@ -73,40 +115,33 @@
             imagecopy($this -> myImage, $waterMark, $waterMarkPosX, $waterMarkPosY, 0, 0, $waterMarkWidth, $waterMarkHeight);
         }
 
-        public function addText(){
+        public function addText($textToImage = null){
             // Append (watermark) text to the photo
 
-            $textToImage = "Veebiprogrammeerimine";
+            if ($textToImage == null){
+                $textToImage = "Veebiprogrammeerimine";
+            }
             $textColor = imagecolorallocatealpha($this -> myImage, 255, 255, 255, 60);
             imagettftext($this -> myImage, 20, 0, 10, 30, $textColor, "../vp_picfiles/Roboto-Bold.ttf", $textToImage);
         }
 
         public function saveFile($target_file){
             // Save file back according to original filetype
-            $notice = null;
+            $notice = 0;
 
             if ($this -> imageFileType == "jpg" or $this -> imageFileType == "jpeg"){
                 if(imagejpeg($this -> myImage, $target_file, 95)){
                     $notice = 1;
-                }
-                else {
-                    $notice = 0;
                 }
             }
             else if ($this -> imageFileType == "png"){
                 if(imagepng($this -> myImage, $target_file, 95)){
                     $notice = 1;
                 }
-                else {
-                    $notice = 0;
-                }
             }
             else if ($this -> imageFileType == "gif"){
-                if(imagegif($this -> myImage, $target_file, 95)){
+                if(imagegif($this -> myImage, $target_file)){
                     $notice = 1;
-                }
-                else {
-                    $notice = 0;
                 }
             }
 
