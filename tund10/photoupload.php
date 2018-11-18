@@ -25,11 +25,11 @@
 			$target_file = $target_dir . $target_file_name;
 
             $myPhoto = new Photoupload($_FILES["fileToUpload"]["tmp_name"]);
+            echo "Faili tüüp on " . $myPhoto -> getFileType(); // TODO: Why is it empty?
             $uploadsuccess = $myPhoto -> suitableImage();
 
             if ($uploadsuccess == 0){
 
-                echo "Faili tüüp on " . $myPhoto -> getFileType(); // TODO: doesn't even echo the text?
                 $target_file_name .= "." . $myPhoto -> getFileType(); // append filetype to target file name
                 $target_file = $target_dir . $target_file_name; // overwrite target_file again
 

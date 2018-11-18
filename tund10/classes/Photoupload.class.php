@@ -8,6 +8,7 @@
 
         public function __construct($file) {
             $this -> tempName = $file;
+            $this -> getFileType();
             $this -> suitableImage();
             $this -> imageFromFile();
         }
@@ -37,7 +38,6 @@
 
             $notice = 0;
             $check = getimagesize($this -> tempName);
-            $this -> getFileType();
 
             if ($this -> imageFileType != "jpg" // Check if it claims to be an image
                 && $this -> imageFileType != "jpeg"
@@ -102,10 +102,13 @@
             return $newImage;
         }
 
-        public function addWatermark($waterMark = null){
+        public function addWatermark($wmPath = null){
             // Append watermark (image) to the photo
-            if ($waterMark == null){
+            if ($wmPath == null){
                 $waterMark = imagecreatefrompng("../vp_picfiles/vp_logo_w100_overlay.png"); // relative to the php file that runs the class
+            }
+            else {
+                $waterMark = imagecreatefrompng($wmPath); // relative to the php file that runs the class
             }
             $waterMarkWidth = imagesx($waterMark);
             $waterMarkHeight = imagesy($waterMark);
@@ -115,11 +118,14 @@
             imagecopy($this -> myImage, $waterMark, $waterMarkPosX, $waterMarkPosY, 0, 0, $waterMarkWidth, $waterMarkHeight);
         }
 
-        public function addText($textToImage = null){
+        public function addText($text = null){
             // Append (watermark) text to the photo
 
-            if ($textToImage == null){
+            if ($text == null){
                 $textToImage = "Veebiprogrammeerimine";
+            }
+            else {
+                $textToImage = $text;
             }
             $textColor = imagecolorallocatealpha($this -> myImage, 255, 255, 255, 60);
             imagettftext($this -> myImage, 20, 0, 10, 30, $textColor, "../vp_picfiles/Roboto-Bold.ttf", $textToImage);
