@@ -168,7 +168,7 @@
                 }
             }
             else if ($this -> imageFileType == "png"){
-                if(imagepng($this -> myImage, $target_file, 95)){
+                if(imagepng($this -> myImage, $target_file)){
                     $notice = 1;
                 }
             }

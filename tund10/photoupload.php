@@ -20,7 +20,7 @@
     $uploadOk = 1; // assume upload is ok, unless told otherwise
 
 	if(isset($_POST["submitImage"])) { // Check for image submission - https://www.w3schools.com/php/php_file_upload.asp
-		if(!empty($_FILES["fileToUpload"]["tmp_name"])) {
+		if(!empty($_FILES["fileToUpload"]["name"])) {
 
             $myPhoto = new Photoupload($_FILES["fileToUpload"]);
 

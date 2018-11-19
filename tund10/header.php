@@ -7,8 +7,8 @@
         <link rel="icon" href="https://www.tlu.ee/themes/tlu/images/favicons/favicon-32x32.png" type="image/png" sizes="16x16">
 		<style>
 			body {
-				background-color: <?php echo $_SESSION["backgroundcolor"]; ?>;
-				color: <?php echo $_SESSION["foregroundcolor"]; ?>
+				background-color: <?php echo $_SESSION["bgColor"]; ?>;
+				color: <?php echo $_SESSION["txtColor"]; ?>
 			}
 		</style>
   </head>
