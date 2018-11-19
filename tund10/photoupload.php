@@ -16,47 +16,56 @@
 	*/
 
 	$notice = "";
-	// Image submission https://www.w3schools.com/php/php_file_upload.asp
-	if(isset($_POST["submitImage"])) { // Check for image submission
+    $target_dir = "../vp_pic_uploads/";
+    $uploadOk = 1; // assume upload is ok, unless told otherwise
+
+	if(isset($_POST["submitImage"])) { // Check for image submission - https://www.w3schools.com/php/php_file_upload.asp
 		if(!empty($_FILES["fileToUpload"]["tmp_name"])) {
-			$timeStamp = microtime(1) * 10000; // multiply to make it an int
-			$target_dir = "../vp_pic_uploads/";
-			$target_file_name = "vp_" . $timeStamp;
-			$target_file = $target_dir . $target_file_name;
 
-            $myPhoto = new Photoupload($_FILES["fileToUpload"]["tmp_name"]);
-            echo "Faili tüüp on " . $myPhoto -> getFileType(); // TODO: Why is it empty?
-            $uploadsuccess = $myPhoto -> suitableImage();
+            $myPhoto = new Photoupload($_FILES["fileToUpload"]);
 
-            if ($uploadsuccess == 0){
+            // Set the file name
+            $myPhoto -> makeFileName();
+            $target_file = $target_dir . $myPhoto -> fileName;
 
-                $target_file_name .= "." . $myPhoto -> getFileType(); // append filetype to target file name
-                $target_file = $target_dir . $target_file_name; // overwrite target_file again
+            // Check whether it is a suitable image
+            $uploadOk = $myPhoto->checkForImage();
+            if($uploadOk == 1){
+                // Check for type
+                $uploadOk = $myPhoto->checkForFileType();
+            }
+
+            if($uploadOk == 1){
+                // Check for size
+                $uploadOk = $myPhoto->checkForFileSize($_FILES["fileToUpload"], 2500000);
+            }
+
+            if($uploadOk == 1){
+                // Check if exists
+                $uploadOk = $myPhoto->checkIfExists($target_file);
+            }
+
+            // Otherwise, if there is an error
+            if ($uploadOk == 0) {
+                $notice = "Vabandame, faili ei laetud üles! Tekkisid vead: " . $myPhoto -> errorsForUpload;
+                // If everything is correct, upload
+            } else {
 
                 $myPhoto -> changePhotoSize(600, 400);
                 $myPhoto -> addWatermark();
                 $myPhoto -> addText();
                 $savesuccess = $myPhoto -> saveFile($target_file);
-                unset($myPhoto);
 
-                // If upload succeeded
+                // If upload succeeded, save to database
                 if ($savesuccess == 1){
-                    addPhotoData($target_file_name, $_POST["altText"], $_POST["privacy"]);
-                    echo "Pilt üles laaditud!";
+                    $notice = "Pilt üles laaditud!";
+                    addPhotoData($myPhoto -> fileName, $_POST["altText"], $_POST["privacy"]);
                 }
                 else {
-                    echo "Vabandust, faili üleslaadimisel esines tehniline viga.";
+                    $notice = "Foto lisamisel andmebaasi tekkis viga!";
                 }
             }
-            else if ($uploadsuccess == 1){
-                $notice = "Tegu ei ole sobiva JPG, PNG või GIF-pildiga.";
-            }
-            else if ($uploadsuccess == 2){
-                $notice = "Pilt on juba olemas.";
-            }
-            else if ($uploadsuccess == 3){
-                $notice = "Antud pilt on liiga suur.";
-            }
+            unset($myPhoto);
 
             /* if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
                 $notice = "Fail ". basename( $_FILES["fileToUpload"]["name"]). " on üles laaditud.";
@@ -78,7 +87,7 @@
 	<input type="radio" name="privacy" value="1"><label>Avalik</label>
 	<input type="radio" name="privacy" value="2"><label>Sisseloginud kasutajatele</label>
 	<input type="radio" name="privacy" value="3" checked><label>Privaatne</label><br/>
-	<input type="submit" value="Laadi pilt üles" name="submitImage">
+	<input type="submit" value="Laadi pilt üles" name="submitImage"><br/>
     <b><?php echo $notice; ?></b>
 </form>
 

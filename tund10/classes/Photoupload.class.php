@@ -1,61 +1,29 @@
 <?php
     class Photoupload 
     {
-        private $tempName;      // Intial name reference
-        private $imageFileType; // The file type
-        private $myTempImage;   // Initial image object
-        private $myImage;       // Output image object
+        private $tempName;       // Intial name reference
+        public $imageFileType;   // The file type
+        public $imageSize;       // The image size
+        private $myTempImage;    // Initial image object
+        private $myImage;        // Output image object
+        public $fileName;        // Output file name
+        private $uploadOk;       // Did the upload succeed
+        public $errorsForUpload; // Otherwise what was the error
 
-        public function __construct($file) {
-            $this -> tempName = $file;
-            $this -> getFileType();
-            $this -> suitableImage();
+        function __construct($file) {
+            //$this -> tempName = $file;
+            $this -> tempName = $file["tmp_name"];
+            $this -> imageFileType = strtolower(pathinfo($file["name"], PATHINFO_EXTENSION));
+            $this -> imageSize = $file["size"];
             $this -> imageFromFile();
+            $this -> uploadOk = 1;
         }
 
-        public function __destruct() {
+        function __destruct() {
             // Kill image objects
 
-            if($this -> myTempImage != null){
-                imagedestroy($this -> myTempImage);
-            }
-
-            if($this -> myImage != null) {
-                imagedestroy($this->myImage);
-            }
-        }
-
-        public function getFileType(){
-            // Assume the file type by file extension
-
-            $this -> imageFileType = strtolower(pathinfo(basename($this -> tempName),PATHINFO_EXTENSION));
-
-            return $this -> imageFileType;
-        }
-
-        public function suitableImage(){
-            // Check if the image is suitable for upload
-
-            $notice = 0;
-            $check = getimagesize($this -> tempName);
-
-            if ($this -> imageFileType != "jpg" // Check if it claims to be an image
-                && $this -> imageFileType != "jpeg"
-                && $this -> imageFileType != "png"
-                && $this -> imageFileType != "gif" ) {
-                $notice = 1;
-            }
-            else if($check !== false) { // Check if it is sized like an image
-                $notice = 1;
-            }
-            else if (file_exists($this -> tempName)) { // Check if file already exists
-                $notice = 2;
-            }
-            else if ($this -> tempName > 2500000) {  // Check file size
-                $notice = 3;
-            }
-
-            return $notice;
+            imagedestroy($this -> myTempImage);
+            imagedestroy($this -> myImage);
         }
 
         private function imageFromFile(){
@@ -70,6 +38,59 @@
             else if ($this -> imageFileType == "gif"){
                 $this -> myTempImage = imagecreatefromgif($this -> tempName);
             }
+        }
+
+        public function makeFileName($prefix = null){
+            // Use a timestamp and predefined prefix as file name
+
+            if ($prefix == null){
+                $prefix = "vp_";
+            }
+
+            $timeStamp = microtime(1) * 10000;
+            $this -> fileName = $prefix . $timeStamp . "." . $this -> imageFileType;
+        }
+
+        public function checkForImage(){
+            // Check whether it is an image by asking for it's size
+
+            $this -> errorsForUpload = "";
+            $check = getimagesize($this->tempName);
+            if($check == false) {
+                $this -> errorsForUpload .= "Fail ei ole pilt.";
+                $this -> uploadOk = 0;
+            }
+            return $this -> uploadOk;
+        }
+
+        public function checkForFileSize($size){
+            // Check whether the file is small enough
+            if ($this -> imageSize > $size) {
+                $this -> errorsForUpload .= " Kahjuks on fail liiga suur!";
+                $this -> uploadOk = 0;
+            }
+            return $this -> uploadOk;
+        }
+
+        public function checkForFileType(){
+            // Check whether the file is one of the allowed filetypes
+            if($this -> imageFileType != "jpg"
+            && $this -> imageFileType != "png"
+            && $this -> imageFileType != "jpeg"
+            && $this -> imageFileType != "gif" ) {
+                $this -> errorsForUpload .= " Kahjuks on lubatud vaid JPG, JPEG, PNG ja GIF failid!";
+                $this -> uploadOk = 0;
+            }
+            return $this -> uploadOk;
+        }
+
+        public function checkIfExists($target){
+            // Check whether the file already exists
+            if (file_exists($target)) {
+                $this -> errorsForUpload .= "Kahjuks on selline pilt juba olemas!";
+                $this -> uploadOk = 0;
+            }
+            return $this -> uploadOk;
         }
 
         public function changePhotoSize($width, $height){
@@ -97,6 +118,12 @@
             // Resize the photo physically (exact values given by changePhotoSize)
 
             $newImage = imagecreatetruecolor($w, $h);
+
+            // Keep transparency if the image has it
+            imagesavealpha($newImage, true);
+            $transColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
+            imagefill($newImage, 0, 0, $transColor);
+
             imagecopyresampled($newImage, $image, 0, 0, 0, 0, $w, $h, $ow, $oh);
     
             return $newImage;
