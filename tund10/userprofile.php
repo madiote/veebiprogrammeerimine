@@ -5,6 +5,8 @@
     require("classes/Photoupload.class.php");
 
     $notice = "";
+    $imgnotice = "";
+
 
     $mydescription = "Pole tutvustust lisanud!";
     $mybgcolor = "#FFFFFF";
@@ -30,9 +32,9 @@
         $mytxtcolor = $_POST["txtcolor"];
 
         // Profile picture upload
-        if(!empty($_FILES["fileToUpload"]["name"])) {
+        if(!empty($_FILES["profilePicUpload"]["name"])) {
 
-            $myPhoto = new Photoupload($_FILES["fileToUpload"]);
+            $myPhoto = new Photoupload($_FILES["profilePicUpload"]);
 
             // Set the file name
             $myPhoto -> makeFileName("vpuser_");
@@ -47,7 +49,7 @@
 
             if($uploadOk == 1){
                 // Check for size
-                $uploadOk = $myPhoto->checkForFileSize($_FILES["fileToUpload"], 2500000);
+                $uploadOk = $myPhoto->checkForFileSize($_FILES["profilePicUpload"], 2500000);
             }
 
             if($uploadOk == 1){
@@ -57,21 +59,21 @@
 
             // Otherwise, if there is an error
             if ($uploadOk == 0) {
-                $notice = "Vabandame, faili ei laetud üles! Tekkisid vead: " . $myPhoto -> errorsForUpload;
+                $imgnotice = "Vabandame, faili ei laetud üles! Tekkisid vead: " . $myPhoto -> errorsForUpload;
                 // If everything is correct, upload
             } else {
 
-                $myPhoto -> changePhotoSize(300, 300);
+                $myPhoto -> profilePicSize(300);
                 $myPhoto -> addWatermark();
                 $savesuccess = $myPhoto -> saveFile($target_file);
 
                 // If upload succeeded, save to database
                 if ($savesuccess == 1){
-                    $notice = "Pilt üles laaditud!";
+                    $imgnotice = "Pilt üles laaditud!";
                     addUserPhotoData($myPhoto -> fileName);
                 }
                 else {
-                    $notice = "Foto lisamisel andmebaasi tekkis viga!";
+                    $imgnotice = "Foto lisamisel andmebaasi tekkis viga!";
                 }
             }
             unset($myPhoto);
@@ -110,8 +112,9 @@
 	<label>Nimi:</label>
 	<input type="text" value="<?php echo $_SESSION["firstName"] . " " . $_SESSION["lastName"]; ?>" disabled><br>
 	<label>Foto:</label><br>
-	<img src="<?php echo $profilePic; ?>" alt="<?php echo $_SESSION["firstName"] . " " . $_SESSION["lastName"]; ?>">
+	<img src="<?php echo $profilePic; ?>" alt="<?php echo $_SESSION["firstName"] . " " . $_SESSION["lastName"]; ?>"><br>
     <input type="hidden" name="profilepic" value="<?php echo $profilePic; ?>">
+    <b><?php echo $imgnotice; ?></b>
     <br>
 	<input type="file" name="profilePicUpload"><br>
 	<label>Kirjeldus (max 300 märki):</label>

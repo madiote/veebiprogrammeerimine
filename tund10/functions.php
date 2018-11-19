@@ -9,7 +9,7 @@
         $addedId = null;
         $mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
 
-        $stmt = $mysqli -> prepare("INSERT INTO vpprofilephotos (userid, filename) VALUES (?, ?)");
+        $stmt = $mysqli -> prepare("INSERT INTO vp_user_pictures (userid, filename) VALUES (?, ?)");
         echo $mysqli->error;
 
         $stmt -> bind_param("is", $_SESSION["userId"], $fileName);
@@ -70,7 +70,7 @@
     $stmt->close();
     //kui on pilt olemas
     if(!empty($profile->picture)){
-        $stmt = $mysqli->prepare("SELECT filename FROM vp_user_pictures WHERE id=?");
+        $stmt = $mysqli->prepare("SELECT filename FROM vp_user_pictures WHERE id = ?");
         echo $mysqli->error;
         $stmt->bind_param("i", $profile->picture);
         $stmt->bind_result($pictureFile);

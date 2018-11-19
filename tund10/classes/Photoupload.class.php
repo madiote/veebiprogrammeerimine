@@ -110,7 +110,7 @@
             $newWidth = round($imageWidth / $sizeRatio);
             $newHeight = round($imageHeight / $sizeRatio);
 
-            $this -> myImage = $this -> resizeImage($this -> myTempImage, 
+            $this -> myImage = $this -> resizeImage($this -> myTempImage,
                                                     $imageWidth, $imageHeight, $newWidth, $newHeight);
         }
 
@@ -126,6 +126,44 @@
 
             imagecopyresampled($newImage, $image, 0, 0, 0, 0, $w, $h, $ow, $oh);
     
+            return $newImage;
+        }
+
+        function profilePicSize($size){
+            // Resize the image to profile picture size
+
+            $imageWidth = imagesx($this -> myTempImage);
+            $imageHeight = imagesy($this -> myTempImage);
+
+            if ($size == null){
+                $size = 300;
+            }
+
+            //leian vajaliku suurendusfaktori, siin arvestan, et lõikan ruuduks!!!
+            if($imageWidth > $imageHeight){
+                $sizeRatio = $imageHeight / $size;//ruuduks lõikamisel jagan vastupidi
+            } else {
+                $sizeRatio = $imageWidth / $size;
+            }
+
+            $newWidth = round($imageWidth / $sizeRatio);
+            $newHeight = $newWidth;
+            $this -> myImage = $this -> resizeImagetoSquare($this -> myTempImage, $imageWidth, $imageHeight, $newWidth, $newHeight);
+        }
+
+        function resizeImageToSquare($image, $ow, $oh, $w, $h){
+            $newImage = imagecreatetruecolor($w, $h);
+            if($ow > $oh){
+                $cropX = round(($ow - $oh) / 2);
+                $cropY = 0;
+                $cropSize = $oh;
+            } else {
+                $cropX = 0;
+                $cropY = round(($oh - $ow) / 2);
+                $cropSize = $ow;
+            }
+
+            imagecopyresampled($newImage, $image, 0, 0, $cropX, $cropY, $w, $h, $cropSize, $cropSize);
             return $newImage;
         }
 
