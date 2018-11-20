@@ -39,7 +39,7 @@
 	<p><a href="newuser.php">Loo kasutaja</a>!</p>
 	<p><a href="addmsg.php">Lisa sõnum</a>!</p>
 	<hr>
-    <div>
+    <div style="float: left; margin-right: 1em;">
     <h2>Avalikud pildid</h2>
     <?php echo lastPicture(1); ?>
     </div>
