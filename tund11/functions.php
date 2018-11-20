@@ -5,6 +5,29 @@
 	// Using a session
 	session_start();
 
+    function lastPicture($privacy){
+        $html = "";
+        $mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+        $stmt = $mysqli -> prepare("SELECT filename, alttext FROM vpphotos WHERE id = (SELECT MAX(id) FROM vpphotos WHERE privacy = ? AND deleted IS NULL)");
+        echo $mysqli -> error;
+
+        $stmt -> bind_param("i", $privacy);
+        $stmt -> bind_result($filenameFromDb, $alttextFromDb);
+        $stmt -> execute();
+
+        if($stmt -> fetch()){
+            //<img src="kataloog/pildifail.laiend" alt="alt-tekst">
+            $html = '<img src="' . $GLOBALS["picDir"] . $filenameFromDb . '" alt="' . $alttextFromDb . '">' . "\n";
+        }
+        else {
+            $html = "<p>Vabandame, avalikke pilte pole.</p>\n";
+        }
+
+        $stmt -> close();
+        $mysqli -> close();
+        return $html;
+    }
+
     function addUserPhotoData($fileName){
         $addedId = null;
         $mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);

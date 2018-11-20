@@ -39,6 +39,10 @@
 	<p><a href="newuser.php">Loo kasutaja</a>!</p>
 	<p><a href="addmsg.php">Lisa sõnum</a>!</p>
 	<hr>
+    <div>
+    <h2>Avalikud pildid</h2>
+    <?php echo lastPicture(1); ?>
+    </div>
 	<div>
 	<h2>Anonüümsed postitused</h2>
 	  <?php echo allvalidmessages(); ?>
