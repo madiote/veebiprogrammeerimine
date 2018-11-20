@@ -13,6 +13,9 @@ if(isset($_GET["logout"])){
     exit();
 }
 
+$profilePicDirectory = "../vpuser_picfiles/";
+
+
 // Use profile values if they exist
 $myprofile = showmyprofile();
 if($myprofile -> description != ""){

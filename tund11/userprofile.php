@@ -70,7 +70,8 @@
                 // If upload succeeded, save to database
                 if ($savesuccess == 1){
                     $imgnotice = "Pilt üles laaditud!";
-                    addUserPhotoData($myPhoto -> fileName);
+                    $addedPhotoId = addUserPhotoData($myPhoto -> fileName);
+
                 }
                 else {
                     $imgnotice = "Foto lisamisel andmebaasi tekkis viga!";
@@ -101,7 +102,7 @@
             $mytxtcolor = $myprofile -> txtcolor;
         }
         if($myprofile -> picture != ""){
-            $profilePic = $profilePicDirectory . $myprofile -> picture;
+            $profilePic = $target_dir . $myprofile -> picture;
         }
     }
 	$pageTitle = "Profiiliteave";
