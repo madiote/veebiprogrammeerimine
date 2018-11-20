@@ -204,6 +204,43 @@
             imagettftext($this -> myImage, 20, 0, 10, 30, $textColor, "../vp_picfiles/Roboto-Bold.ttf", $textToImage);
         }
 
+        public function createThumbnail($directory, $size){
+            // Create a thumbnail from the original image
+
+            $imageWidth = imagesx($this -> myTempImage);
+            $imageHeight = imagesy($this -> myTempImage);
+
+            if($imageWidth > $imageHeight){ // Landscape
+                $cutSize = $imageHeight; // As it is the shorter size
+                $cutX = round(($imageWidth - $imageHeight) / 2); // Get the X position where to cut from
+                $cutY = 0;
+            }
+            else { // Portrait or square
+                $cutSize = $imageWidth; // As it is the shorter size
+                $cutX = 0;
+                $cutY = round(($imageHeight - $cutSize) / 2); // Get the X position where to cut from
+            }
+
+            $myThumbnail = imagecreatetruecolor($size, $size);
+
+            // Transparency preserving code goes here
+
+            imagecopyresampled($myThumbnail, $this -> myTempImage,
+                                            0, 0, $cutX, $cutY, $size, $size, $cutSize, $cutSize);
+
+            $target_file = $directory . $this -> fileName;
+
+            if ($this -> imageFileType == "jpg" or $this -> imageFileType == "jpeg"){
+                imagejpeg($myThumbnail, $target_file, 95);
+            }
+            else if ($this -> imageFileType == "png"){
+                imagepng($myThumbnail, $target_file);
+            }
+            else if ($this -> imageFileType == "gif"){
+                imagegif($myThumbnail, $target_file);
+            }
+        }
+
         public function saveFile($target_file){
             // Save file back according to original filetype
             $notice = 0;

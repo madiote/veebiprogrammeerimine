@@ -16,7 +16,9 @@
 	*/
 
 	$notice = "";
-    $target_dir = "../vp_pic_uploads/";
+	$thumb_size = 100;
+    $target_dir = $picDir; // from config.php
+    $thumb_dir = $thumbDir; // from config.php
     $uploadOk = 1; // assume upload is ok, unless told otherwise
 
 	if(isset($_POST["submitImage"])) { // Check for image submission - https://www.w3schools.com/php/php_file_upload.asp
@@ -60,12 +62,13 @@
                 else {
                     $myPhoto -> addText();
                 }
-                
+
                 $myPhoto -> addWatermark();
                 $savesuccess = $myPhoto -> saveFile($target_file);
 
                 // If upload succeeded, save to database
                 if ($savesuccess == 1){
+                    $myPhoto -> createThumbnail($thumb_dir, $thumb_size);
                     $notice = "Pilt üles laaditud!";
                     addPhotoData($myPhoto -> fileName, $_POST["altText"], $_POST["privacy"]);
                 }
