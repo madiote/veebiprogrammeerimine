@@ -4,12 +4,11 @@
 
     // When requesting signout
     if(!isset($_GET["page"])){ // if there is no page parameter, append one
-        header("Location: ?page=1");
+        header("Location: ?page=0");
         exit();
     }
 
     $totalPics = allPictureCount(2);
-    $startAt = 0;
     $picsPerPage = 5;
 	$currentPage = $_GET["page"];
 	$totalPages = round($totalPics / $picsPerPage); // How many pages are needed to display all images
@@ -24,7 +23,7 @@
         $thumbs = allPublicPictureThumbsPage(2, $startAt, $picsPerPage);
     }
 
-    if ($currentPage > 1){
+    if ($currentPage > 0){
         $pageBack = '<a href="?page=' . ($currentPage - 1) . '">&#x3C; Eelmised</a>';
     }
     else {
