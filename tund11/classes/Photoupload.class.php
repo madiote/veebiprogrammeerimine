@@ -191,15 +191,13 @@
             imagecopy($this -> myImage, $waterMark, $waterMarkPosX, $waterMarkPosY, 0, 0, $waterMarkWidth, $waterMarkHeight);
         }
 
-        public function addText($text = null){
+        public function addText($textToImage = null){
             // Append (watermark) text to the photo
 
-            if ($text == null){
+            if ($textToImage == null){
                 $textToImage = "Veebiprogrammeerimine";
             }
-            else {
-                $textToImage = $text;
-            }
+
             $textColor = imagecolorallocatealpha($this -> myImage, 255, 255, 255, 60);
             imagettftext($this -> myImage, 20, 0, 10, 30, $textColor, "../vp_picfiles/Roboto-Bold.ttf", $textToImage);
         }
@@ -230,33 +228,29 @@
 
             $target_file = $directory . $this -> fileName;
 
-            if ($this -> imageFileType == "jpg" or $this -> imageFileType == "jpeg"){
-                imagejpeg($myThumbnail, $target_file, 95);
-            }
-            else if ($this -> imageFileType == "png"){
-                imagepng($myThumbnail, $target_file);
-            }
-            else if ($this -> imageFileType == "gif"){
-                imagegif($myThumbnail, $target_file);
-            }
+            $this->saveFile($target_file, $myThumbnail);
         }
 
-        public function saveFile($target_file){
+        public function saveFile($target_file, $source_file = null){
             // Save file back according to original filetype
             $notice = 0;
 
+            if ($source_file == null){
+                $source_file = $this -> myImage;
+            }
+
             if ($this -> imageFileType == "jpg" or $this -> imageFileType == "jpeg"){
-                if(imagejpeg($this -> myImage, $target_file, 95)){
+                if(imagejpeg($source_file, $target_file, 95)){
                     $notice = 1;
                 }
             }
             else if ($this -> imageFileType == "png"){
-                if(imagepng($this -> myImage, $target_file)){
+                if(imagepng($source_file, $target_file)){
                     $notice = 1;
                 }
             }
             else if ($this -> imageFileType == "gif"){
-                if(imagegif($this -> myImage, $target_file)){
+                if(imagegif($source_file, $target_file)){
                     $notice = 1;
                 }
             }
