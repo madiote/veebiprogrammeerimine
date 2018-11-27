@@ -11,8 +11,8 @@
     $totalPics = allPictureCount(2);
     $picsPerPage = 5;
 	$currentPage = $_GET["page"];
-	$totalPages = round($totalPics / $picsPerPage); // How many pages are needed to display all images
-	$picsLeft = $totalPics - ($currentPage * $picsPerPage); // How many images are left to display
+	$totalPages = round($totalPics / $picsPerPage) - 1; // How many pages are needed to display all images, -1 because we currently also show zero
+    $picsLeft = $totalPics - ($currentPage * $picsPerPage); // How many images are left to display
 
     $startAt = $currentPage * $picsPerPage;
 
