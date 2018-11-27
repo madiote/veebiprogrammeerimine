@@ -30,7 +30,12 @@
             if($this -> imageFileType == "jpg" or $this -> imageFileType == "jpeg"){
                 // Avoid the EXIF warning - add an @
                 @$exif = exif_read_data($this -> tempName, "ANY_TAG", 0, true);
+            }
+            if(isset($exif["DateTimeOriginal"])){
                 return @$exif["DateTimeOriginal"];
+            }
+            else {
+                return null;
             }
         }
 
