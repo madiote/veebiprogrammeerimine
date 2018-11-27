@@ -5,7 +5,6 @@
     // When requesting signout
     if(!isset($_GET["page"])){ // if there is no page parameter, append one
         header("Location: ?page=0");
-        exit();
     }
 
     $totalPics = allPictureCount(2);
@@ -15,6 +14,10 @@
     $picsLeft = $totalPics - ($currentPage * $picsPerPage); // How many images are left to display
 
     $startAt = $currentPage * $picsPerPage;
+
+    if ($_GET["page"] > $totalPages){ // Go to last page if the user set too large number
+        header("Location: ?page=" . $totalPages);
+    }
 
     if ($picsLeft < $picsPerPage){ // if there are less images to display than $perPage, use the real count to prevent errors
         $thumbs = allPublicPictureThumbsPage(2, $startAt, $picsLeft);
