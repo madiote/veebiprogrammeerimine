@@ -20,7 +20,7 @@ window.onload = function(){
     }
 
     closeBtn.addEventListener("click", closeModal);
-    modalImg.addEventListener("click", closeModal);
+    modal.addEventListener("click", closeModal);
 };
 
 function openModal(evt) {
