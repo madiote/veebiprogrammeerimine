@@ -87,6 +87,7 @@
 	}
 
 	$pageTitle = "Fotode üleslaadimine";
+	$scripts = '<script type="text/javascript" src="javascript/checkFileSize.js" defer></script>' . "\n";
 	require("header.php");
 ?>		
 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post" enctype="multipart/form-data">
@@ -98,8 +99,8 @@
 	<input type="radio" name="privacy" value="1"><label>Avalik</label>
 	<input type="radio" name="privacy" value="2"><label>Sisseloginud kasutajatele</label>
 	<input type="radio" name="privacy" value="3" checked><label>Privaatne</label><br/>
-	<input type="submit" value="Laadi pilt üles" name="submitImage"><br/>
-    <b><?php echo $notice; ?></b>
+	<input type="submit" value="Laadi pilt üles" id="submitImage" name="submitImage"><br/>
+    <b id="infoPlace"><?php echo $notice; ?></b>
 </form>
 
 <?php require("footer-account.php"); ?>

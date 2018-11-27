@@ -11,6 +11,11 @@
 				color: <?php echo $_SESSION["txtColor"]; ?>
 			}
 		</style>
+        <?php
+            if(isset($scripts)){
+                echo $scripts;
+            }
+        ?>
   </head>
   <body>
 		<div>
