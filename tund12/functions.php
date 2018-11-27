@@ -32,7 +32,7 @@ function allPublicPictureThumbsPage($privacy, $startAt = 0, $perPage = 5){
 
     while($stmt -> fetch()){
         //<img src="kataloog/pildifail.laiend" alt="alt-tekst">
-        $html .= '<img src="' . $GLOBALS["thumbDir"] . $filenameFromDb . '" alt="' . $alttextFromDb . '">' . "\n";
+        $html .= '<img src="' . $GLOBALS["thumbDir"] . $filenameFromDb . '" alt="' . $alttextFromDb . '" data-fn="' . $filenameFromDb . '">' . "\n";
     }
 
     if (empty($html)) {

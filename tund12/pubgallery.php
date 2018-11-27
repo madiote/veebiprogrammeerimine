@@ -41,9 +41,26 @@
     }
 
     $pageTitle = "Avalikud pildid";
-    require("header.php");
+    $scripts = '<link rel="stylesheet" type="text/css" href="style/modal.css">' . "\n";
+    $scripts .= '<script type="text/javascript" src="javascript/modal.js" defer></script>' . "\n";
+require("header.php");
 ?>
-<?php echo $thumbs . "<br>\n" . "<p>Leht " . $currentPage . "/" . $totalPages . " " . $pageBack . $pageForward . "</p>"; ?>
+<div id="gallery">
+    <?php echo $thumbs . "<br>\n" .
+        "<p>Leht " . $currentPage . "/" . $totalPages . " " . $pageBack . $pageForward . "</p>"; ?>
+</div>
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+    <!-- The Close Button -->
+    <span class="close">&times;</span>
+
+    <!-- Modal Content (The Image) -->
+    <img class="modal-content" id="modalImg">
+
+    <!-- Modal Caption (Image Text) -->
+    <div id="caption"></div>
+</div>
 <?php require("footer-account.php"); ?>
 <?php require("footer.php"); ?>
 
