@@ -38,6 +38,7 @@ function getId(filename){ // Ask for ID using AJAX
         if (this.readyState == 4 && this.status == 200) {
             // Do something with the server response
             modalId = this.responseText;
+            console.log("Avasid pildi " + modalId);
             setRatingGetAvg();
         }
     };

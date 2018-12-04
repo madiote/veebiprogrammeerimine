@@ -8,7 +8,7 @@ $mysqli = new mysqli($serverHost, $serverUsername, $serverPassword, $database);
 $stmt = $mysqli -> prepare("SELECT id FROM vpphotos WHERE filename = ?");
 echo $mysqli -> error;
 
-$stmt -> bind_param("i", $filename);
+$stmt -> bind_param("s", $filename);
 $stmt -> bind_result($id);
 $stmt -> execute();
 $stmt -> fetch();
