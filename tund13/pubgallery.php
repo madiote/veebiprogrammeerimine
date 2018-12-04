@@ -59,7 +59,16 @@ require("header.php");
     <img class="modal-content" id="modalImg">
 
     <!-- Modal Caption (Image Text) -->
-    <div id="caption"></div>
+    <div id="caption" class="caption"></div>
+    <div id="rating" class="caption">
+        <label><input type="radio" name="rating" id="rating1" value="1">1</label>
+        <label><input type="radio" name="rating" id="rating2" value="2">2</label>
+        <label><input type="radio" name="rating" id="rating3" value="3">3</label>
+        <label><input type="radio" name="rating" id="rating4" value="4">4</label>
+        <label><input type="radio" name="rating" id="rating5" value="5">5</label>
+        <input type="button" value="Hinda" id="storerating">
+        <span id="avgRating"></span>
+    </div>
 </div>
 <?php require("footer-account.php"); ?>
 <?php require("footer.php"); ?>

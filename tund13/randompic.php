@@ -31,11 +31,11 @@
     }
 
     // Print image list
-    
+    /*
     foreach($photoList as $pic){
         $html .= "<p>" . $pic -> filename .  " | " . $pic -> alttext . "</p> \n";
     }
-
+    */
 
     $stmt -> close();
     $mysqli -> close();

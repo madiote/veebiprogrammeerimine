@@ -17,3 +17,7 @@ CREATE TABLE `if18_madis_ot_1`.`vpphotos` ( `id` INT(15) NOT NULL AUTO_INCREMENT
 Kasutajaprofiili piltide tabel:
 
 CREATE TABLE `if18_madis_ot_1`.`vpprofilephotos` ( `id` INT(15) NOT NULL AUTO_INCREMENT , `userid` INT(11) NOT NULL , `filename` VARCHAR(40) NOT NULL , `created` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP , `deleted` DATE NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+Piltide hinded:
+
+CREATE TABLE `if18_madis_ot_1`.`vpphotoratings` ( `id` INT(11) NOT NULL AUTO_INCREMENT , `photoid` INT(11) NOT NULL , `userid` INT(11) NOT NULL , `rating` INT(1) NOT NULL , `added` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;
