@@ -3,15 +3,25 @@ require("../../../config.php"); // Account details
 $database = "if18_madis_ot_1";
 session_start();
 $id = $_REQUEST["id"];
-$rating = $_REQUEST["rating"];
+
+if(empty($_REQUEST["rating"])){
+    $rating = null;
+}
+else {
+    $rating = $_REQUEST["rating"];
+}
 
 $mysqli = new mysqli($serverHost, $serverUsername, $serverPassword, $database);
-$stmt = $mysqli -> prepare("INSERT INTO vpphotoratings (photoid, userid, rating) VALUES(?,?,?)");
-echo $mysqli -> error;
 
-$stmt -> bind_param("iii", $id, $_SESSION["userId"], $rating);
-$stmt -> execute();
-$stmt -> close();
+if($rating != null) {
+    $stmt = $mysqli->prepare("INSERT INTO vpphotoratings (photoid, userid, rating) VALUES(?,?,?)");
+    echo $mysqli->error;
+
+    $stmt->bind_param("iii", $id, $_SESSION["userId"], $rating);
+    $stmt->execute();
+    $stmt->close();
+}
+
 
 $stmt = $mysqli -> prepare("SELECT AVG(rating) FROM vpphotoratings WHERE photoid = ?");
 echo $mysqli -> error;

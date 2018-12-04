@@ -30,6 +30,7 @@ function openModal(evt) {
     captionText.innerHTML = "<p>" + evt.target.alt + "</p>";
     modal.style.display = "block";
     document.getElementById("storerating").addEventListener("click", storeRating);
+    getRating();
 }
 
 function storeRating(){
@@ -54,6 +55,19 @@ function storeRating(){
         req.open("GET", "storerating.php?id=" + modalId + "&rating=" + rating, true);
         req.send();
     }
+}
+
+function getRating(){ // Stupid way to get the rating - reuse the same function without parameters
+    // AJAX
+    let req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            // Do something with the server response
+            document.getElementById("avgRating").innerHTML = "Keskmine: " + this.responseText; // avg rating
+        }
+    };
+    req.open("GET", "storerating.php?id=" + modalId, true);
+    req.send();
 }
 
 function closeModal() {
