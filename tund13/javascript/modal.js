@@ -1,6 +1,5 @@
 let modal;
 let modalImg;
-let imgFilename;
 let captionText;
 let closeBtn;
 let photoDir = "../vp_pic_uploads/";
@@ -26,24 +25,23 @@ window.onload = function(){
 };
 
 function openModal(evt) {
-    imgFilename = evt.target.dataset.fn;
     modalImg.src = photoDir + evt.target.dataset.fn;
-    getId();
+    getId(evt.target.dataset.fn);
     captionText.innerHTML = "<p>" + evt.target.alt + "</p>";
     modal.style.display = "block";
     document.getElementById("storerating").addEventListener("click", storeRating);
-    getRating();
 }
 
-function getId(){ // Ask for ID using AJAX
+function getId(filename){ // Ask for ID using AJAX
     let req = new XMLHttpRequest();
     req.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             // Do something with the server response
             modalId = this.responseText;
+            setRatingGetAvg();
         }
     };
-    req.open("GET", "getphotoid.php?filename=" + imgFilename, true);
+    req.open("GET", "getphotoid.php?filename=" + filename, true);
     req.send();
 }
 
@@ -56,22 +54,11 @@ function storeRating(){
     }
 
     if(rating > 0){
-        // AJAX
-        let req = new XMLHttpRequest();
-        req.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                // Do something with the server response
-                document.getElementById("avgRating").innerHTML = "Keskmine: " + this.responseText; // avg rating
-            }
-        };
-        // Make a request with URL and parameters
-        //storerating.php?id=6&rating=3
-        req.open("GET", "storerating.php?id=" + modalId + "&rating=" + rating, true);
-        req.send();
+        setRatingGetAvg(rating);
     }
 }
 
-function getRating(){ // Stupid way to get the rating - reuse the same function without parameters
+function setRatingGetAvg(setrating = null){ // Stupid way to get the rating - reuse the same function without parameters
     // AJAX
     let req = new XMLHttpRequest();
     req.onreadystatechange = function() {
@@ -80,7 +67,13 @@ function getRating(){ // Stupid way to get the rating - reuse the same function 
             document.getElementById("avgRating").innerHTML = "Keskmine: " + this.responseText; // avg rating
         }
     };
-    req.open("GET", "storerating.php?id=" + modalId, true);
+    if (setrating != null){
+        req.open("GET", "storerating.php?id=" + modalId + "&rating=" + rating, true);
+    }
+    else {
+        req.open("GET", "storerating.php?id=" + modalId, true);
+
+    }
     req.send();
 }
 
