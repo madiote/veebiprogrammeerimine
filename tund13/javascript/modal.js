@@ -1,5 +1,6 @@
 let modal;
 let modalImg;
+let imgFilename;
 let captionText;
 let closeBtn;
 let photoDir = "../vp_pic_uploads/";
@@ -25,12 +26,25 @@ window.onload = function(){
 };
 
 function openModal(evt) {
+    imgFilename = evt.target.dataset.fn;
     modalImg.src = photoDir + evt.target.dataset.fn;
-    modalId = evt.target.dataset.id;
+    getId();
     captionText.innerHTML = "<p>" + evt.target.alt + "</p>";
     modal.style.display = "block";
     document.getElementById("storerating").addEventListener("click", storeRating);
     getRating();
+}
+
+function getId(){ // Ask for ID using AJAX
+    let req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            // Do something with the server response
+            modalId = this.responseText;
+        }
+    };
+    req.open("GET", "getphotoid.php?filename=" + imgFilename, true);
+    req.send();
 }
 
 function storeRating(){

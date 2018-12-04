@@ -23,18 +23,17 @@ function allPictureCount($privacy = 2){
 function allPublicPictureThumbsPage($privacy, $startAt = 0, $perPage = 5){
     $html = "";
     $mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
-    $stmt = $mysqli -> prepare("SELECT id, filename, alttext FROM vpphotos WHERE privacy <= ? AND deleted IS NULL LIMIT ?, ?");
+    $stmt = $mysqli -> prepare("SELECT filename, alttext FROM vpphotos WHERE privacy <= ? AND deleted IS NULL LIMIT ?, ?");
     echo $mysqli -> error;
 
     $stmt -> bind_param("iii", $privacy, $startAt, $perPage);
-    $stmt -> bind_result($idFromDb, $filenameFromDb, $alttextFromDb);
+    $stmt -> bind_result($filenameFromDb, $alttextFromDb);
     $stmt -> execute();
 
     while($stmt -> fetch()){
         //<img src="kataloog/pildifail.laiend" alt="alt-tekst">
         $html .= '<img src="' . $GLOBALS["thumbDir"] . $filenameFromDb .
-                '" alt="' . $alttextFromDb . '" data-fn="' . $filenameFromDb .
-                '" data-id="' . $idFromDb . '">' . "\n";
+                '" alt="' . $alttextFromDb . '" data-fn="' . $filenameFromDb . '">' . "\n";
     }
 
     if (empty($html)) {
