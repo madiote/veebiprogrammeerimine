@@ -77,3 +77,18 @@
         width: 100%;
     }
 }
+
+.thumbGallery
+{
+    width: 100px;
+    height: 200px;
+    padding: 5px;
+    float: left;
+    margin-right: 5px;
+    /*display: inline;*/
+}
+
+.thumbGallery p
+{
+    height: 40px;
+}

@@ -66,6 +66,8 @@ function setRatingGetAvg(setrating = null){ // Stupid way to get the rating - re
         if (this.readyState == 4 && this.status == 200) {
             // Do something with the server response
             document.getElementById("avgRating").innerHTML = "Keskmine: " + this.responseText; // avg rating
+            document.getElementById("score" + modalId).innerHTML = "Hinne: " + this.responseText; // avg rating
+
         }
     };
     if (setrating != null){

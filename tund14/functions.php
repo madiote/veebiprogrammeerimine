@@ -23,17 +23,31 @@ function allPictureCount($privacy = 2){
 function allPublicPictureThumbsPage($privacy, $startAt = 0, $perPage = 5){
     $html = "";
     $mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
-    $stmt = $mysqli -> prepare("SELECT filename, alttext FROM vpphotos WHERE privacy <= ? AND deleted IS NULL LIMIT ?, ?");
+    $stmt = $mysqli -> prepare("SELECT vpphotos.id, vpusers.firstname, vpusers.lastname, vpphotos.filename, vpphotos.alttext, AVG(vpphotoratings.rating) as AvgValue FROM vpphotos JOIN vpusers ON vpphotos.userid = vpusers.id LEFT JOIN vpphotoratings ON vpphotoratings.photoid = vpphotos.id WHERE vpphotos.privacy < ? AND deleted IS NULL GROUP BY vpphotos.id DESC LIMIT ?,?");
     echo $mysqli -> error;
 
     $stmt -> bind_param("iii", $privacy, $startAt, $perPage);
-    $stmt -> bind_result($filenameFromDb, $alttextFromDb);
+    $stmt -> bind_result($imgIdFromDb, $firstNameFromDb, $lastNameFromDb, $filenameFromDb, $alttextFromDb, $ratingFromDb);
     $stmt -> execute();
 
     while($stmt -> fetch()){
-        //<img src="kataloog/pildifail.laiend" alt="alt-tekst">
-        $html .= '<img src="' . $GLOBALS["thumbDir"] . $filenameFromDb .
-                '" alt="' . $alttextFromDb . '" data-fn="' . $filenameFromDb . '">' . "\n";
+        if ($ratingFromDb > 0){
+            $showRating = "Hinne: " . $ratingFromDb;
+        }
+        else {
+            $showRating = "Hinne puudub";
+        }
+
+        $html .= '<div class="thumbGallery">' .
+                        '<img src="' .
+                            $GLOBALS["thumbDir"] . $filenameFromDb .
+                            '" alt="' . $alttextFromDb .
+                            '" data-fn="' . $filenameFromDb .
+                            '" data-id="' . $imgIdFromDb .
+                        '">' .
+            '<p>' . $firstNameFromDb . " " . $lastNameFromDb . '</p>' .
+            '<p id="score' . $imgIdFromDb .'">' . $showRating . '</p>' .
+            '</div>' . "\n";
     }
 
     if (empty($html)) {
