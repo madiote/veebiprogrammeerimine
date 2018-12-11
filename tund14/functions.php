@@ -23,7 +23,7 @@ function allPictureCount($privacy = 2){
 function allPublicPictureThumbsPage($privacy, $startAt = 0, $perPage = 5){
     $html = "";
     $mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
-    $stmt = $mysqli -> prepare("SELECT vpphotos.id, vpusers.firstname, vpusers.lastname, vpphotos.filename, vpphotos.alttext, AVG(vpphotoratings.rating) as AvgValue FROM vpphotos JOIN vpusers ON vpphotos.userid = vpusers.id LEFT JOIN vpphotoratings ON vpphotoratings.photoid = vpphotos.id WHERE vpphotos.privacy < ? AND deleted IS NULL GROUP BY vpphotos.id DESC LIMIT ?,?");
+    $stmt = $mysqli -> prepare("SELECT vpphotos.id, vpusers.firstname, vpusers.lastname, vpphotos.filename, vpphotos.alttext, AVG(vpphotoratings.rating) as AvgValue FROM vpphotos JOIN vpusers ON vpphotos.userid = vpusers.id LEFT JOIN vpphotoratings ON vpphotoratings.photoid = vpphotos.id WHERE vpphotos.privacy <= ? AND deleted IS NULL GROUP BY vpphotos.id DESC LIMIT ?,?");
     echo $mysqli -> error;
 
     $stmt -> bind_param("iii", $privacy, $startAt, $perPage);
@@ -45,9 +45,9 @@ function allPublicPictureThumbsPage($privacy, $startAt = 0, $perPage = 5){
                             '" data-fn="' . $filenameFromDb .
                             '" data-id="' . $imgIdFromDb .
                         '">' .
-            '<p>' . $firstNameFromDb . " " . $lastNameFromDb . '</p>' .
-            '<p id="score' . $imgIdFromDb .'">' . $showRating . '</p>' .
-            '</div>' . "\n";
+                        '<p>' . $firstNameFromDb . " " . $lastNameFromDb . '</p>' .
+                        '<p id="score' . $imgIdFromDb .'">' . $showRating . '</p>' .
+                 '</div>' . "\n";
     }
 
     if (empty($html)) {

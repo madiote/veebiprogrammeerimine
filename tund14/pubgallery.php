@@ -46,8 +46,10 @@
 require("header.php");
 ?>
 <div id="gallery">
-    <?php echo $thumbs . "<br>\n" .
-        "<p>Leht " . $currentPage . "/" . $totalPages . " " . $pageBack . $pageForward . "</p>"; ?>
+    <?php
+        echo $thumbs . "<br>\n" . // allPublicPictureThumbsPage @ functions.php
+        "<p>Leht " . $currentPage . "/" . $totalPages . " " . $pageBack . $pageForward . "</p>";
+    ?>
 </div>
 <!-- The Modal -->
 <div id="myModal" class="modal">
