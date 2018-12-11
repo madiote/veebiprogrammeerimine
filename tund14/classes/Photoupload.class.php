@@ -1,0 +1,266 @@
+<?php
+    class Photoupload 
+    {
+        private $tempName;       // Intial name reference
+        public $imageFileType;   // The file type
+        public $imageSize;       // The image size
+        private $myTempImage;    // Initial image object
+        private $myImage;        // Output image object
+        public $fileName;        // Output file name
+        private $uploadOk;       // Did the upload succeed
+        public $errorsForUpload; // Otherwise what was the error
+
+        function __construct($file) {
+            //$this -> tempName = $file;
+            $this -> tempName = $file["tmp_name"];
+            $this -> imageFileType = strtolower(pathinfo($file["name"], PATHINFO_EXTENSION));
+            $this -> imageSize = $file["size"];
+            $this -> imageFromFile();
+            $this -> uploadOk = 1;
+        }
+
+        function __destruct() {
+            // Kill image objects
+
+            imagedestroy($this -> myTempImage);
+            imagedestroy($this -> myImage);
+        }
+
+        public function readExif(){
+            if($this -> imageFileType == "jpg" or $this -> imageFileType == "jpeg"){
+                // Avoid the EXIF warning - add an @
+                @$exif = exif_read_data($this -> tempName, "ANY_TAG", 0, true);
+            }
+            if(isset($exif["DateTimeOriginal"])){
+                return @$exif["DateTimeOriginal"];
+            }
+            else {
+                return null;
+            }
+        }
+
+        private function imageFromFile(){
+            // Create an image object according to filetype
+
+            if ($this -> imageFileType == "jpg" or $this -> imageFileType == "jpeg"){
+                $this -> myTempImage = imagecreatefromjpeg($this -> tempName);
+            }
+            else if ($this -> imageFileType == "png"){
+                $this -> myTempImage = imagecreatefrompng($this -> tempName);
+            }
+            else if ($this -> imageFileType == "gif"){
+                $this -> myTempImage = imagecreatefromgif($this -> tempName);
+            }
+        }
+
+        public function makeFileName($prefix = null){
+            // Use a timestamp and predefined prefix as file name
+
+            if ($prefix == null){
+                $prefix = "vp_";
+            }
+
+            $timeStamp = microtime(1) * 10000;
+            $this -> fileName = $prefix . $timeStamp . "." . $this -> imageFileType;
+        }
+
+        public function checkForImage(){
+            // Check whether it is an image by asking for it's size
+
+            $this -> errorsForUpload = "";
+            $check = getimagesize($this->tempName);
+            if($check == false) {
+                $this -> errorsForUpload .= "Fail ei ole pilt.";
+                $this -> uploadOk = 0;
+            }
+            return $this -> uploadOk;
+        }
+
+        public function checkForFileSize($size){
+            // Check whether the file is small enough
+            if ($this -> imageSize > $size) {
+                $this -> errorsForUpload .= " Kahjuks on fail liiga suur!";
+                $this -> uploadOk = 0;
+            }
+            return $this -> uploadOk;
+        }
+
+        public function checkForFileType(){
+            // Check whether the file is one of the allowed filetypes
+            if($this -> imageFileType != "jpg"
+            && $this -> imageFileType != "png"
+            && $this -> imageFileType != "jpeg"
+            && $this -> imageFileType != "gif" ) {
+                $this -> errorsForUpload .= " Kahjuks on lubatud vaid JPG, JPEG, PNG ja GIF failid!";
+                $this -> uploadOk = 0;
+            }
+            return $this -> uploadOk;
+        }
+
+        public function checkIfExists($target){
+            // Check whether the file already exists
+            if (file_exists($target)) {
+                $this -> errorsForUpload .= "Kahjuks on selline pilt juba olemas!";
+                $this -> uploadOk = 0;
+            }
+            return $this -> uploadOk;
+        }
+
+        public function changePhotoSize($width, $height){
+            // Start resizing the photo with proper ratio
+
+            $imageWidth = imagesx($this -> myTempImage);
+            $imageHeight = imagesy($this -> myTempImage);
+            
+            // Calculate size ratio
+            if ($imageWidth > $imageHeight){
+                $sizeRatio = $imageWidth / $width;
+            }
+            else {
+                $sizeRatio = $imageHeight / $height;
+            }
+
+            $newWidth = round($imageWidth / $sizeRatio);
+            $newHeight = round($imageHeight / $sizeRatio);
+
+            $this -> myImage = $this -> resizeImage($this -> myTempImage,
+                                                    $imageWidth, $imageHeight, $newWidth, $newHeight);
+        }
+
+        private function resizeImage($image, $ow, $oh, $w, $h){
+            // Resize the photo physically (exact values given by changePhotoSize)
+
+            $newImage = imagecreatetruecolor($w, $h);
+
+            // Keep transparency if the image has it
+            imagesavealpha($newImage, true);
+            $transColor = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
+            imagefill($newImage, 0, 0, $transColor);
+
+            imagecopyresampled($newImage, $image, 0, 0, 0, 0, $w, $h, $ow, $oh);
+    
+            return $newImage;
+        }
+
+        function profilePicSize($size){
+            // Resize the image to profile picture size
+
+            $imageWidth = imagesx($this -> myTempImage);
+            $imageHeight = imagesy($this -> myTempImage);
+
+            if ($size == null){
+                $size = 300;
+            }
+
+            //leian vajaliku suurendusfaktori, siin arvestan, et lõikan ruuduks!!!
+            if($imageWidth > $imageHeight){
+                $sizeRatio = $imageHeight / $size;//ruuduks lõikamisel jagan vastupidi
+            } else {
+                $sizeRatio = $imageWidth / $size;
+            }
+
+            $newWidth = round($imageWidth / $sizeRatio);
+            $newHeight = $newWidth;
+            $this -> myImage = $this -> resizeImagetoSquare($this -> myTempImage, $imageWidth, $imageHeight, $newWidth, $newHeight);
+        }
+
+        function resizeImageToSquare($image, $ow, $oh, $w, $h){
+            $newImage = imagecreatetruecolor($w, $h);
+            if($ow > $oh){
+                $cropX = round(($ow - $oh) / 2);
+                $cropY = 0;
+                $cropSize = $oh;
+            } else {
+                $cropX = 0;
+                $cropY = round(($oh - $ow) / 2);
+                $cropSize = $ow;
+            }
+
+            imagecopyresampled($newImage, $image, 0, 0, $cropX, $cropY, $w, $h, $cropSize, $cropSize);
+            return $newImage;
+        }
+
+        public function addWatermark($wmPath = null){
+            // Append watermark (image) to the photo
+            if ($wmPath == null){
+                $waterMark = imagecreatefrompng("../vp_picfiles/vp_logo_w100_overlay.png"); // relative to the php file that runs the class
+            }
+            else {
+                $waterMark = imagecreatefrompng($wmPath); // relative to the php file that runs the class
+            }
+            $waterMarkWidth = imagesx($waterMark);
+            $waterMarkHeight = imagesy($waterMark);
+            $waterMarkPosX = imagesx($this -> myImage) - $waterMarkWidth - 10; // 10 px as padding
+            $waterMarkPosY = imagesy($this -> myImage) - $waterMarkHeight - 10; // 10 px as padding
+
+            imagecopy($this -> myImage, $waterMark, $waterMarkPosX, $waterMarkPosY, 0, 0, $waterMarkWidth, $waterMarkHeight);
+        }
+
+        public function addText($textToImage = null){
+            // Append (watermark) text to the photo
+
+            if ($textToImage == null){
+                $textToImage = "Veebiprogrammeerimine";
+            }
+
+            $textColor = imagecolorallocatealpha($this -> myImage, 255, 255, 255, 60);
+            imagettftext($this -> myImage, 20, 0, 10, 30, $textColor, "../vp_picfiles/Roboto-Bold.ttf", $textToImage);
+        }
+
+        public function createThumbnail($directory, $size){
+            // Create a thumbnail from the original image
+
+            $imageWidth = imagesx($this -> myTempImage);
+            $imageHeight = imagesy($this -> myTempImage);
+
+            if($imageWidth > $imageHeight){ // Landscape
+                $cutSize = $imageHeight; // As it is the shorter size
+                $cutX = round(($imageWidth - $imageHeight) / 2); // Get the X position where to cut from
+                $cutY = 0;
+            }
+            else { // Portrait or square
+                $cutSize = $imageWidth; // As it is the shorter size
+                $cutX = 0;
+                $cutY = round(($imageHeight - $cutSize) / 2); // Get the X position where to cut from
+            }
+
+            $myThumbnail = imagecreatetruecolor($size, $size);
+
+            // Transparency preserving code goes here
+
+            imagecopyresampled($myThumbnail, $this -> myTempImage,
+                                            0, 0, $cutX, $cutY, $size, $size, $cutSize, $cutSize);
+
+            $target_file = $directory . $this -> fileName;
+
+            $this->saveFile($target_file, $myThumbnail);
+        }
+
+        public function saveFile($target_file, $source_file = null){
+            // Save file back according to original filetype
+            $notice = 0;
+
+            if ($source_file == null){
+                $source_file = $this -> myImage;
+            }
+
+            if ($this -> imageFileType == "jpg" or $this -> imageFileType == "jpeg"){
+                if(imagejpeg($source_file, $target_file, 95)){
+                    $notice = 1;
+                }
+            }
+            else if ($this -> imageFileType == "png"){
+                if(imagepng($source_file, $target_file)){
+                    $notice = 1;
+                }
+            }
+            else if ($this -> imageFileType == "gif"){
+                if(imagegif($source_file, $target_file)){
+                    $notice = 1;
+                }
+            }
+
+            return $notice;
+        }
+    }
+?>
