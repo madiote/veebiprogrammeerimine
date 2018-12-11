@@ -1,3 +1,14 @@
+<?php
+
+if(empty($_SESSION["bgColor"])){
+    $_SESSION["bgColor"] = "#FFFFFF";
+}
+
+if(empty($_SESSION["txtColor"])){
+    $_SESSION["txtColor"] = "#000000";
+}
+
+?>
 <!DOCTYPE html>
 <html>
   <head>

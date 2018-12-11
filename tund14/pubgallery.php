@@ -45,12 +45,7 @@
     $scripts .= '<script type="text/javascript" src="javascript/modal.js" defer></script>' . "\n";
 require("header.php");
 ?>
-<div id="gallery">
-    <?php
-        echo $thumbs . "<br>\n" . // allPublicPictureThumbsPage @ functions.php
-        "<p>Leht " . $currentPage . "/" . $totalPages . " " . $pageBack . $pageForward . "</p>";
-    ?>
-</div>
+
 <!-- The Modal -->
 <div id="myModal" class="modal">
 
@@ -72,6 +67,14 @@ require("header.php");
         <span id="avgRating"></span>
     </div>
 </div>
+
+<div id="gallery" class="gallery">
+    <?php
+        echo $thumbs . "<br><br><br><br><br><br><br><br><br><br><br>\n" . // allPublicPictureThumbsPage @ functions.php
+        "<p>Leht " . $currentPage . "/" . $totalPages . " " . $pageBack . $pageForward . "</p>";
+    ?>
+</div>
+
 <?php require("footer-account.php"); ?>
 <?php require("footer.php"); ?>
 

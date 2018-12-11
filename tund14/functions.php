@@ -6,7 +6,6 @@ $database = "if18_madis_ot_1";
 session_start();
 
 function addNewsPost($title, $content, $expire){
-    echo "Kuupäev " .  $expire;
     $mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
 
     $stmt = $mysqli -> prepare("INSERT INTO vpnews (userid, title, content, expire) VALUES (?, ?, ?, ?)");
