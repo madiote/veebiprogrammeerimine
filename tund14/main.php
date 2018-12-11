@@ -12,6 +12,7 @@
 	<li><a href="users.php">Kasutajate nimekiri</a></li>
 	<li><a href="photoupload.php">Piltide üleslaadimine</a></li>
     <li><a href="pubgallery.php">Avalike fotode galerii</a></li>
+    <li><a href="news.php">Uudised</a></li>
 </ul>
 <hr>
 <div id="pic">

@@ -5,6 +5,44 @@ $database = "if18_madis_ot_1";
 // Using a session
 session_start();
 
+function addNewsPost($title, $content, $expire){
+    echo "Kuupäev " .  $expire;
+    $mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+
+    $stmt = $mysqli -> prepare("INSERT INTO vpnews (userid, title, content, expire) VALUES (?, ?, ?, ?)");
+    echo $mysqli->error;
+
+    $stmt -> bind_param("isss", $_SESSION["userId"], $title, $content, $expire);
+    $stmt -> execute();
+    echo $stmt->error;
+
+    $stmt -> close();
+    $mysqli -> close();
+}
+
+function getTimelyNews($expireDate){
+    $html = "";
+    $mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+    $stmt = $mysqli -> prepare("SELECT userid, title, content FROM vpnews WHERE expire >= ? AND deleted IS NULL");
+    echo $mysqli -> error;
+
+    $stmt -> bind_param("s", $expireDate);
+    $stmt -> bind_result($userIdFromDb, $titleFromDb, $contentFromDb);
+    $stmt -> execute();
+
+    while($stmt -> fetch()){
+    $html .= '<div class = "newsPost">' .
+                '<h3>' . $titleFromDb . '</h3>' .
+                '<i>' . 'Autori ID: ' . $userIdFromDb. '</i>'.
+                '<p>' . $contentFromDb . '</p>' .
+             '</div><br>' . "\n";
+    }
+
+    $stmt -> close();
+    $mysqli -> close();
+    return $html;
+}
+
 function allPictureCount($privacy = 2){
     $mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
     $stmt = $mysqli -> prepare("SELECT COUNT(*) FROM vpphotos WHERE privacy <= ? AND deleted IS NULL");
